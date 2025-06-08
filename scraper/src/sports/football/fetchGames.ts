@@ -44,7 +44,7 @@ async function fetchAndStoreFixtures(specific_season?: number | null) {
     try {
       fixtures = await fetchSportData(SPORT, dimention, params);
     } catch (err: any) {
-      logger.error(`Error while fetching fixtures for League ID ${league.league.id} | League Name ${league.league.name}:\n`)
+      logger.error(`Error while fetching fixtures for League ID ${league.league.id} | League Name ${league.league.name}`)
     } finally {
       logger.info(`League ID ${league.league.id} | League Name ${league.league.name} | Season ${seasonToFetch} | Fetched ${fixtures.length} games.`);
     }

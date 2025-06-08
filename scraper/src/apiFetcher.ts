@@ -27,9 +27,9 @@ export async function fetchSportData(
   try {
     const response = await axios(config);
   
-    if (response.data.errors.length > 0) {
-      logger.error(`API error(s) fetching ${endpoint}:`, response.data.errors);
-      throw new Error(`API returned errors for ${endpoint}`);
+    // check if the API returned an error
+    if (Object.keys(response?.data?.errors || {}).length > 0) {
+      throw new Error(`(API error) ${JSON.stringify(response.data.errors)}`);
     }
 
     logger.info(`Fetched ${response.data.response.length} records`)
@@ -37,7 +37,7 @@ export async function fetchSportData(
     return response.data.response;
   
   } catch (err: any) {
-    logger.error(`Request error fetching ${endpoint}:`, err.response?.data || err.message);
+    logger.error(`Error fetching ${endpoint}: ${err.response?.data || err.message}`);
     throw err;
   }
 }
