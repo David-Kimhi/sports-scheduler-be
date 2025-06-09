@@ -28,9 +28,18 @@ export async function fetchSportData(
     const response = await axios(config);
   
     // check if the API returned an error
-    if (Object.keys(response?.data?.errors || {}).length > 0) {
-      throw new Error(`(API error) ${JSON.stringify(response.data.errors)}`);
+    const errors = response?.data?.errors || {};
+
+    if (Object.keys(errors).length > 0) {
+      if (errors.requests?.includes("request limit")) {
+        logger.error("❌ API limit reached. Exiting...");
+        process.exit(1); // immediately terminate the app
+      }
+
+      // otherwise throw 
+      throw new Error(`(API error) ${JSON.stringify(errors)}`);
     }
+  
 
     logger.info(`Fetched ${response.data.response.length} records`)
   

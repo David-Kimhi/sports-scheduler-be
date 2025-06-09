@@ -74,23 +74,32 @@ export function wrapperWrite<T extends Document>(
 export async function writeUpsert<T extends Document>(
   collection: Collection<T>,
   data: T[],
-  matchField: string
+  matchField: string,
+  source?: string
 ): Promise<BulkWriteResult> {
-  const ops = data.map(doc => {
-    const filter = buildFilter(matchField, doc);
+  const enrichedData = data.map(doc => ({
+    ...doc,
+    ingestion_info: {
+      fetched_at: new Date().toISOString(),
+      source: source ?? 'unknown',
+      inserted_by: process.env.CURR_ENV
+    }
+  }));
 
+  const ops = enrichedData.map(doc => {
+    const filter = buildFilter(matchField, doc);
     return {
-      updateOne: {
+      replaceOne: {
         filter,
-        update: { $set: doc },
-        upsert: true,
+        replacement: doc,
+        upsert: true
       }
     };
   });
 
-  const results = await collection.bulkWrite(ops);
-  return results;
+  return await collection.bulkWrite(ops);
 }
+
 
 /**
  * Inserts one or many documents into a MongoDB collection.
