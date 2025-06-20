@@ -2,7 +2,8 @@
   "name": "setup-scraper",
   "type": "module",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && npm run copy:json",
+    "copy:json": "find src -name '*.json' -exec cp --parents {} dist/ \\;",
     "start": "node dist/scraper/src/fetch_with_flags.js"
   },
   "devDependencies": {
