@@ -18,7 +18,7 @@ export async function fetchCollection(db_name: string, collection_name: string) 
         data = await collection.find({}).toArray();
         logger.info(`Fetched ${data.length} documents`)
     } catch (err: any) {
-        logger.error(`General error: ${err.message}`);
+        logger.error(`General error: ${err.message}, ${err}`);
     } finally {
         await client.close();
     }
