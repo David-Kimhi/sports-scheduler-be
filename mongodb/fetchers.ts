@@ -19,6 +19,7 @@ export async function fetchCollection(db_name: string, collection_name: string) 
         logger.info(`Fetched ${data.length} documents`)
     } catch (err: any) {
         logger.error(`General error: ${err.message}, ${err}`);
+        logger.error(`password provided is ${process.env.DB_PASSWORD}`)
     } finally {
         await client.close();
     }
