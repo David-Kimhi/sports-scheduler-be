@@ -20,6 +20,7 @@ export async function fetchCollection(db_name: string, collection_name: string) 
     } catch (err: any) {
         logger.error(`General error: ${err.message}, ${err}`);
         logger.error(`password provided is ${process.env.DB_PASSWORD}`)
+        logger.error(`URI is ${URI}`)
     } finally {
         await client.close();
     }
