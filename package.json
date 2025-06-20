@@ -3,7 +3,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc && npm run copy:json",
-    "copy:json": "rsync -av --include='*/' --include='*.json' --exclude='*' scraper/src/ dist/",
+    "copy:json": "rsync -av --include='*/' --include='*.json' --exclude='*' scraper/src/ dist/scraper/src",
     "start": "node dist/scraper/src/fetch_with_flags.js"
   },
   "devDependencies": {
