@@ -1,25 +1,27 @@
 {
     "compilerOptions": {
-        "noEmit": true,
-        "strict": true,
-        "target": "ESNext",
-        "baseUrl": "./src",
-        "lib": ["ES2024", "DOM", "DOM.Iterable"],
-        "allowJs": true,
-        "jsx": "preserve",
-        "esModuleInterop": true,
-        "module": "ESNext",
-        "moduleResolution": "bundler",
-        "forceConsistentCasingInFileNames": true,
-        "useUnknownInCatchVariables": true,
-        "noImplicitOverride": true,
-        "verbatimModuleSyntax": true,
-        "paths": {
-            "test/*": ["test/*"],
-            "~/*": ["src/*"],
-            "*": ["*"]
-        },
-        "typeRoots": ["src/types", "node_modules/@types"],
-        "types": []
-    } 
+      "strict": true,
+      "target": "ESNext",
+      "baseUrl": "./src",
+      "lib": ["ES2024", "DOM", "DOM.Iterable"],
+      "allowJs": true,
+      "jsx": "preserve",
+      "esModuleInterop": true,
+      "module": "ESNext",
+      "moduleResolution": "bundler",
+      "forceConsistentCasingInFileNames": true,
+      "useUnknownInCatchVariables": true,
+      "noImplicitOverride": true,
+      "verbatimModuleSyntax": true,
+      "paths": {
+        "test/*": ["test/*"],
+        "~/*": ["src/*"],
+        "*": ["*"]
+      },
+      "typeRoots": ["src/types", "node_modules/@types"],
+      "types": [],
+      "outDir": "dist"           // ✅ where compiled JS files go
+    },
+    "include": ["**/*.ts"]           // ✅ makes sure your code is compiled
 }
+  

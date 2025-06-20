@@ -2,5 +2,6 @@
 node_modules/
 __pycache__/
 *.log
+dist/
 
 .DS_Store
