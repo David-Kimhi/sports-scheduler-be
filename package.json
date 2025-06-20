@@ -2,6 +2,7 @@
   "name": "setup-scraper",
   "type": "module",
   "scripts": {
+    "build": "tsc",
     "start": "node --loader ts-node/esm scraper/src/sports/football/fetchCountries.ts"
   },
   "devDependencies": {
