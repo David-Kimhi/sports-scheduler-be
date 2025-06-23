@@ -1,11 +1,12 @@
 import { fetchCollection } from '../../../../mongodb/fetchers.js';
 import { wrapperWrite, writeUpsert } from '../../../../mongodb/writers.js';
-import { SPORT, FIRST_LOAD} from './config.js';
+import { SPORT, FIRST_LOAD, FREE_YEARS_FOOTBALL} from './config.js';
 import { fetchSportData } from '../../apiFetcher.js';
 import { delaySeconds} from '../../utils.js';
 import { MODULE } from './config.js';
 import { createLogger } from '../../../../logger.js';
 import { runOnce } from './flags.js';
+import type { IntegerType } from 'mongodb';
 
 // create a logger for writing actions
 const logger = createLogger(`${MODULE}-fetchGames`);
@@ -14,7 +15,7 @@ const dimention = 'fixtures'
 
 const wrapperUpsert = wrapperWrite(writeUpsert, SPORT, dimention);
 
-async function handleLeague(league: any) {
+async function handleLeague(league: any, customYear?: IntegerType) {
   if (process.env.API_PLAN === "FREE") {
     await delaySeconds(6);
   }
@@ -26,7 +27,7 @@ async function handleLeague(league: any) {
     return;
   }
 
-  const seasonToFetch = (process.env.API_PLAN === "FREE") ? 2021 : currentSeason.year;
+  const seasonToFetch = (process.env.API_PLAN === "FREE") ? customYear : currentSeason.year;
   const params = {
     league: league.league.id,
     season: seasonToFetch,
@@ -57,9 +58,20 @@ export async function fetchAndStoreFixtures(specific_season?: number | null) {
   }
 
   for (const league of leagues) {
-    await runOnce(
-      `fetchGamesLeague_${league.league.id}`,
-      () => handleLeague(league)
-    );
-  }
+
+    if (process.env.API_PLAN === "FREE") {
+      for (const year of FREE_YEARS_FOOTBALL) {
+        await runOnce(
+          `fetchGamesLeague_${league.league.id}_${year}`,
+          () => handleLeague(league, year)
+        )
+      }
+
+    } else {
+      await runOnce(
+        `fetchGamesLeague_${league.league.id}`,
+        () => handleLeague(league)
+      )
+    } // end if
+  } // end of for (leagues)
 }

@@ -3,7 +3,7 @@ import {  fetchAndStoreLeauges } from './sports/football/fetchLeagues.js'
 import { fetchAndStoreFixtures } from './sports/football/fetchGames.js';
 import { runOnce, resetFlags } from './sports/football/flags.js';
 
-resetFlags();
+// resetFlags();
 
 // Countries
 await runOnce("fetchCountries", fetchAndStoreCountries);
