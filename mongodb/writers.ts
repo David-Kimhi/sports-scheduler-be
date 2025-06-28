@@ -1,6 +1,6 @@
 import { MongoClient, Db, Collection,} from 'mongodb';
 import type { Document, OptionalUnlessRequiredId, BulkWriteResult, InsertOneResult, InsertManyResult } from 'mongodb';
-import { buildFilter } from './helpers.js';
+import { buildFilter, getMongoDb, closeMongoDb } from './helpers.js';
 import { URI } from './config.js';
 import pLimit from 'p-limit';
 import { MODULE } from './config.js';
@@ -35,23 +35,14 @@ type WriteFunction<T extends Document> = (collection: Collection<T>, ...args: an
  */
 export function wrapperWrite<T extends Document>(
   fn: WriteFunction<T>,
-  dbName: string,
-  collectionName: string
+  db: Db,
+  collectionName: string,
+  appName: string = 'scraper'
 ): (...args: any[]) => Promise<any> {
   return async function (...args: any[]): Promise<any> {
     const client = new MongoClient(URI);
 
-    let collection;
-
-    try {
-      await client.connect();
-      const db = client.db(dbName);
-      collection = db.collection<T>(collectionName);
-
-    } catch (err) {
-      logger.error('MongoDB connection error:', err);
-      return;
-    } 
+    const collection = db.collection<T>(collectionName);
 
     limitWrites( () => fn(collection, ...args).then(
         results => logWriteResult(results)

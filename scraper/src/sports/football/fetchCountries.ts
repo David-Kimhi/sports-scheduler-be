@@ -2,13 +2,13 @@ import { fetchSportData } from '../../apiFetcher.js'
 import { downloadImage } from '../../utils.js'
 import { wrapperWrite, writeUpsert } from '../../../../mongodb/writers.js'
 import { API_SOURCE, SPORT } from './config.js'
+import { Db } from 'mongodb'
 
 const dimention = 'countries'
 
-const wrapperUpsert = wrapperWrite(writeUpsert, SPORT, dimention);
+async function fetchAndStoreCountries(db: Db) {
+    const wrapperUpsert = wrapperWrite(writeUpsert, db, dimention);
 
-
-async function fetchAndStoreCountries() {
     const countries_source = await fetchSportData(SPORT, dimention)
     const countries_target = [];
 

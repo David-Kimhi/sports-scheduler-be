@@ -40,20 +40,23 @@ export function resetFlags() {
     }
 }
 
-export async function runOnce(flagName: string, fn: () => Promise<void>) {
+export async function runOnce<T extends any[]>(
+  flagName: string,
+  fn: (...args: T) => Promise<void>,
+  ...args: T
+) {
   let flag = getFlag(flagName);
 
-  // If the flag doesn't exist, set it to false first
   if (flag === undefined) {
     setFlag(flagName, false);
     flag = false;
   }
 
-  // Only run the function if it's false
   if (!flag) {
-    await fn();
+    await fn(...args);
     setFlag(flagName, true);
   }
 }
+
   
   

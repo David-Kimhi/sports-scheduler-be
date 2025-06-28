@@ -1,12 +1,13 @@
 import { fetchSportData } from '../../apiFetcher.js'
 import { wrapperWrite, writeUpsert } from '../../../../mongodb/writers.js'
 import { SPORT } from './config.js'
+import { Db } from 'mongodb'
 
 const dimention = 'leagues'
 
-const wrapperUpsert = wrapperWrite(writeUpsert, SPORT, dimention);
+async function fetchAndStoreLeauges(db: Db) {
+    const wrapperUpsert = wrapperWrite(writeUpsert, db, dimention);
 
-async function fetchAndStoreLeauges() {
 
     const leagues = await fetchSportData(SPORT, dimention)
 
