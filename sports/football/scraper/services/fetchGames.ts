@@ -4,16 +4,18 @@ import { SPORT, FIRST_LOAD, FREE_YEARS_FOOTBALL} from '../config.js';
 import { fetchSportData } from '../../../../services/apiSportsFetcher.js';
 import { delaySeconds } from '../../../../helpers.js';
 import { MODULE } from '../config.js';
-import { createLogger } from '../../../../logger.js';
+import { createLogger } from '../../../../services/logger.js';
 import type { IntegerType } from 'mongodb';
 import { Db } from 'mongodb';
 import { FlagsManager } from '../../../../services/FlagsManager.js';
 
+const cwd = process.cwd();
+
 // create a logger
-const logger = createLogger(`${MODULE}`);
+const logger = createLogger(cwd, MODULE, SPORT);
 
 const dimention = 'fixtures'
-const flagsManager = new FlagsManager(process.cwd())
+const flagsManager = new FlagsManager(cwd)
 
 
 async function handleLeague(league: any, db: Db, customYear?: IntegerType) {

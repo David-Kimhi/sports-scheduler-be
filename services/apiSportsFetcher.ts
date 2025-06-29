@@ -1,7 +1,9 @@
 import axios from 'axios';
-import { createLogger } from '../logger.js';
+import { createLogger } from './logger.js';
 
-const logger = createLogger(`APISportsFetcher`);
+
+const cwd = process.cwd()
+const logger = createLogger(cwd, 'API-FETCHER', 'APP');
 
 const API_KEYS: Record<string, string> = {
   football: process.env.APIFOOTBALL_API_KEY!

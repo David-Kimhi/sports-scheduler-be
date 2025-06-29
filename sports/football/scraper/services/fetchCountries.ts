@@ -1,10 +1,13 @@
 import { fetchSportData } from '../../../../services/apiSportsFetcher.js'
 import { downloadImage } from '../../../../helpers.js'
 import { wrapperWrite, writeUpsert } from '../../../../mongodb/writers.js'
-import { SPORT } from '../config.js'
+import { MODULE, SPORT } from '../config.js'
 import { Db } from 'mongodb'
+import { createLogger } from '../../../../services/logger.js'
 
-const dimention = 'countries'
+const cwd = process.cwd();
+const dimention = 'countries';
+const logger = createLogger(cwd, MODULE, SPORT);
 
 async function fetchAndStoreCountries(db: Db) {
     const wrapperUpsert = wrapperWrite(writeUpsert, db, dimention);
@@ -21,7 +24,7 @@ async function fetchAndStoreCountries(db: Db) {
             imageBuffer = await downloadImage(country.flag);
             contentType = 'image/svg+xml';
         } catch (error) {
-        console.warn(`Could not download image for ${country.name}:`, error);
+            logger.warn(`Could not download image for ${country.name}:`, error);
         }
 
         countries_target.push({

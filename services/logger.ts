@@ -1,18 +1,15 @@
 import winston from 'winston';
-import { fileURLToPath } from 'url';
 import path from 'path';
 import fs from 'fs';
-
-// Recreate __dirname in ESM
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { YYYY_MM_DD } from '../helpers.js';
 
 /**
  * Creates a winston logger with the given name.
  */
-export function createLogger(loggerName: string) {
+export function createLogger(cwd: string, module: string, sport: string) {
     // Define log directory and log file path
-    const logDir = path.resolve(__dirname, './logs');
+    const logDir = path.resolve(cwd, './logs');
+    const loggerName = `${YYYY_MM_DD}_${module}_${sport}`
 
     // Ensure the logs directory exists
     if (!fs.existsSync(logDir)) {

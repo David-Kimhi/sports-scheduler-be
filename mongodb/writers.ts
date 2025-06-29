@@ -4,10 +4,10 @@ import { buildFilter, getMongoDb, closeMongoDb } from './helpers.js';
 import { URI } from './config.js';
 import pLimit from 'p-limit';
 import { MODULE } from './config.js';
-import { createLogger } from '../logger.js';
+import { createLogger } from '../services/logger.js';
 
 // create a logger for writing actions
-const logger = createLogger(`${MODULE}-writers`);
+const logger = createLogger(process.cwd(), MODULE, 'APP');
 
 
 // limit writes to mongoDB to 1 in paralel
