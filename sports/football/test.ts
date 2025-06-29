@@ -1,8 +1,8 @@
-import { Country } from "./Country.js";
-import { SPORT, COUNTRIES_COLL_NAME } from "../scraper/src/sports/football/config.js";
-import { closeMongoDb } from "../mongodb/helpers.js";
+import { Country } from "./db/Country.js";
+import { SPORT, COUNTRIES_COLL_NAME } from "./scraper/config.js";
+import { closeMongoDb } from "../../mongodb/helpers.js";
 
-await Country.init(SPORT, COUNTRIES_COLL_NAME);
+Country.collection = await Country.initCollection(SPORT, COUNTRIES_COLL_NAME);
 const results = await Country.findByName('england');
 console.log(results);
 

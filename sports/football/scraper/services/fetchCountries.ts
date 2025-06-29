@@ -1,7 +1,7 @@
-import { fetchSportData } from '../../apiFetcher.js'
-import { downloadImage } from '../../utils.js'
+import { fetchSportData } from '../../../../services/apiSportsFetcher.js'
+import { downloadImage } from '../../../../helpers.js'
 import { wrapperWrite, writeUpsert } from '../../../../mongodb/writers.js'
-import { API_SOURCE, SPORT } from './config.js'
+import { SPORT } from '../config.js'
 import { Db } from 'mongodb'
 
 const dimention = 'countries'

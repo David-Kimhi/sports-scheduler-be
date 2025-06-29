@@ -1,6 +1,6 @@
-import { fetchSportData } from '../../apiFetcher.js'
+import { fetchSportData } from '../../../../services/apiSportsFetcher.js'
 import { wrapperWrite, writeUpsert } from '../../../../mongodb/writers.js'
-import { SPORT } from './config.js'
+import { SPORT } from '../config.js'
 import { Db } from 'mongodb'
 
 const dimention = 'leagues'

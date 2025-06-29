@@ -1,5 +1,5 @@
 {
-  "fetchCountries": true,
+  "fetchCountries": false,
   "fetchGames": false,
   "fetchLeagues": true,
   "fetchFixtures": false,
