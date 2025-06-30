@@ -13,7 +13,7 @@ export class BaseModel {
       return db.collection<Document>(collectionName);
     }
 
-      // Shared metadata fields
+    // Shared metadata fields
     static defaultFields(): BaseDocument {
         return {
             _id: new ObjectId(),

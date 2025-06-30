@@ -11,6 +11,11 @@ export interface LeagueData extends BaseDocument {
 export class League extends BaseModel {
     static collection: Collection<Document>;
 
+
+    static async init(dbName: string, collectionName: string, appName = 'api') {
+        League.collection = await this.initCollection(dbName, collectionName, appName);
+    }
+    
     // Default game object (e.g., for creating new records)
     static default(): LeagueData {
         return {
