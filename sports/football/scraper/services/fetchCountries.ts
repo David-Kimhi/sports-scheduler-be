@@ -7,7 +7,7 @@ import { createLogger } from '../../../../services/logger.js'
 
 const cwd = process.cwd();
 const dimention = 'countries';
-const logger = createLogger(cwd, MODULE, SPORT);
+const logger = createLogger(MODULE, SPORT);
 
 async function fetchAndStoreCountries(db: Db) {
     const wrapperUpsert = wrapperWrite(writeUpsert, db, dimention);

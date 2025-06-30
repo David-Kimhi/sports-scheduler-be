@@ -2,13 +2,14 @@ import winston from 'winston';
 import path from 'path';
 import fs from 'fs';
 import { YYYY_MM_DD } from '../helpers.js';
+import { BASE_PATH } from '../config.js';
 
 /**
  * Creates a winston logger with the given name.
  */
-export function createLogger(cwd: string, module: string, sport: string) {
+export function createLogger(module: string, sport: string) {
     // Define log directory and log file path
-    const logDir = path.resolve(cwd, './logs');
+    const logDir = path.resolve(BASE_PATH, './logs');
     const loggerName = `${YYYY_MM_DD}_${module}_${sport}`
 
     // Ensure the logs directory exists

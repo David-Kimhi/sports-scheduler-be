@@ -12,10 +12,10 @@ import { FlagsManager } from '../../../../services/FlagsManager.js';
 const cwd = process.cwd();
 
 // create a logger
-const logger = createLogger(cwd, MODULE, SPORT);
+const logger = createLogger(MODULE, SPORT);
 
 const dimention = 'fixtures'
-const flagsManager = new FlagsManager(cwd)
+const flagsManager = new FlagsManager()
 
 
 async function handleLeague(league: any, db: Db, customYear?: IntegerType) {

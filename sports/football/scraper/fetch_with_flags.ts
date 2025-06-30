@@ -5,8 +5,7 @@ import { FlagsManager } from '../../../services/FlagsManager.js';
 import { SPORT, MODULE } from './config.js';
 import { getMongoDb, closeMongoDb} from '../../../mongodb/helpers.js';
 
-const flagsManager = new FlagsManager(process.cwd())
-
+const flagsManager = new FlagsManager()
 
 const db = await getMongoDb(SPORT, MODULE);
 

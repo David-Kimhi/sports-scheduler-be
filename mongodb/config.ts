@@ -1,4 +1,5 @@
-import dotenv from 'dotenv';
+import { createLogger } from '../services/logger.js';
+
 
 /**
  * MongoDB URI
@@ -13,3 +14,5 @@ export const DEFAULT_DB_NAME = 'football';
 export const URI = `mongodb+srv://${USERNAME}:${PASSWORD}@${CLUSTER}/${DEFAULT_DB_NAME}${OPTIONS}`;
 
 export const MODULE = 'MongoDB'
+
+export const logger = createLogger(MODULE, 'APP');

@@ -1,11 +1,6 @@
 import { MongoClient, type Document, type WithId,} from 'mongodb';
 import { URI } from './config.js';
-import { MODULE } from './config.js';
-import { createLogger } from '../services/logger.js';
-
-
-// create a logger for writing actions
-const logger = createLogger(process.cwd(), MODULE, 'APP');
+import { logger } from './config.js';
 
 const client = new MongoClient(URI);
 

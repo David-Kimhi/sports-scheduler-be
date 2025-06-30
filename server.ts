@@ -1,23 +1,12 @@
-// import express from 'express';
-// import cors from 'cors';
-// import { searchEntities } from './mongodb/fetchers'; // You'll create this
+import express from 'express';
+import footballApi from './sports/football/api/index.js';
 
-// const app = express();
-// app.use(cors());
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-// app.get('/api/search', async (req, res) => {
-//   const q = String(req.query.q || '').trim();
+app.use(express.json());
+app.use('/api/football', footballApi);
 
-//   if (!q) return res.json([]);
-
-//   try {
-//     const results = await searchEntities(q);
-//     res.json(results);
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ error: 'Search failed' });
-//   }
-// });
-
-// const PORT = 3001;
-// app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});

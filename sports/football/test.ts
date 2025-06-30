@@ -1,5 +1,5 @@
 import { Country } from "./db/Country.js";
-import { SPORT, COUNTRIES_COLL_NAME } from "./scraper/config.js";
+import { SPORT, COUNTRIES_COLL_NAME } from './config.js'
 import { closeMongoDb } from "../../mongodb/helpers.js";
 
 Country.collection = await Country.initCollection(SPORT, COUNTRIES_COLL_NAME);
@@ -12,3 +12,4 @@ await closeMongoDb(SPORT, 'api')
 
 // const params = {country: "england"}
 // console.log(await fetchSportData(SPORT, 'teams', params))
+console.log(process.cwd())

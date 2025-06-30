@@ -1,11 +1,12 @@
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import path from 'path';
+import { BASE_PATH } from '../config';
 
 export class FlagsManager {
   private flagFile: string;
   
-  constructor(cwd: string) {
-    this.flagFile = path.join(cwd, 'data', 'flags.json');;
+  constructor() {
+    this.flagFile = path.join(BASE_PATH, 'data', 'flags.json');;
   }
 
   private load(): Record<string, boolean> {

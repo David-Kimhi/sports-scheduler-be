@@ -3,7 +3,7 @@ import { createLogger } from './logger.js';
 
 
 const cwd = process.cwd()
-const logger = createLogger(cwd, 'API-FETCHER', 'APP');
+const logger = createLogger('API-FETCHER', 'APP');
 
 const API_KEYS: Record<string, string> = {
   football: process.env.APIFOOTBALL_API_KEY!
