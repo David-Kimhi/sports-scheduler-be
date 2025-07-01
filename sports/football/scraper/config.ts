@@ -1,4 +1,4 @@
-import * as upstream_config from "../config"
+import * as upstream_config from "../config.js"
 
 export const SPORT = upstream_config.SPORT;
 export const FIRST_LOAD = true;

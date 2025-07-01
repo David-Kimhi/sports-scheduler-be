@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import path from 'path';
-import { BASE_PATH } from '../config';
+import { BASE_PATH } from '../config.js';
 
 export class FlagsManager {
   private flagFile: string;

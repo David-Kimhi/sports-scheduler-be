@@ -15,13 +15,29 @@ export class BaseModel {
 
     // Shared metadata fields
     static defaultFields(): BaseDocument {
-        return {
-            _id: new ObjectId(),
-            id: -1,
-            name: '',
-            injestion_info: {},         
-        };
-    } 
+      return {
+        _id: new ObjectId(),
+        id: -1,
+        name: '',
+        injestion_info: {},
+      };
+    }
+      
+    protected static getNestedValue(obj: any, path: string): any {
+      return path.split('.').reduce((acc, key) => acc?.[key], obj);
+    }
 
-  }
-  
+    protected static mapDoc<T>(
+      doc: any,
+      sourceMap: Record<keyof T, string | ((doc: any) => any)>
+    ): T {
+      const result: Partial<T> = {};
+
+      for (const [key, val] of Object.entries(sourceMap)) {
+        (result as any)[key] =
+          typeof val === 'function' ? val(doc) : this.getNestedValue(doc, val as string);
+      }
+
+      return result as T;
+    }
+}

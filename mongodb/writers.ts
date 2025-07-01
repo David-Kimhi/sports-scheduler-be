@@ -126,3 +126,25 @@ function logWriteResult(result: any) {
     logger.error('Write operation completed, no summary available.');
   }
 }
+
+
+export async function migrateDateFields(
+  collection: Collection,
+  dateFields: string[]
+) {
+
+  const setObj: Record<string, any> = {};
+  for (const field of dateFields) {
+    setObj[field] = { $toDate: `$${field}` };
+  }
+
+  const result = await collection.updateMany(
+    {
+      $or: dateFields.map((field) => ({ [field]: { $type: 'string' } }))
+    },
+    [{ $set: setObj }]
+  );
+
+  console.log(`✅ Converted ${result.modifiedCount} documents`);
+}
+

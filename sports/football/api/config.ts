@@ -1,4 +1,4 @@
-import { createLogger} from "../../../services/logger";
+import { createLogger} from "../../../services/logger.js";
 import * as upstream_config from '../config.js'
 
 export const MODULE = "API"

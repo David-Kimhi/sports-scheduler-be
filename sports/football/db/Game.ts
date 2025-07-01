@@ -18,7 +18,24 @@ export class Game extends BaseModel {
         Game.collection = await this.initCollection(dbName, collectionName, appName);
     }
 
-    // Default game object (e.g., for creating new records)
+    static gameDocMap: Record<keyof GameData, string | ((doc: any) => any)> = {
+        _id: '_id',
+        id: 'fixture.id',
+        injestion_info: 'injestion_info',
+        date: 'fixture.date',
+        league: 'league.name',
+        country: 'league.country',
+        home: 'teams.home.name',
+        away: 'teams.away.name',
+        name: (doc: any) => `${doc.teams.home.name} vs ${doc.teams.away.name}`
+    };
+
+    static dateFields = ['date', 'name']
+        .map((field) => Game.gameDocMap[field])
+        .filter((v): v is string => typeof v === 'string'); // ensure it's string and not function
+
+
+    // Default game object 
     static default(): GameData {
         return {
             ...this.defaultFields(),
@@ -31,11 +48,11 @@ export class Game extends BaseModel {
     }
 
 
-    static async findByName(
+    static async getGames(
         name: string
         , after: Date
-        , sort: string = 'fixture.date'
-        , direction: string = 'desc'
+        , sort: string
+        , direction: string
         , limit: number = SMALL_L
         , from?: Date
         , to?: Date
@@ -45,14 +62,14 @@ export class Game extends BaseModel {
         // name filter
         const nameFilter = {
             $or: [
-              { 'teams.home.name': regex },
-              { 'teams.away.name': regex }
+              { [this.gameDocMap.home as string]: regex },
+              { [this.gameDocMap.away as string]: regex }
             ]
           };
         
         // Pagination (optional)
         const paginationFilter = after
-            ? { [sort]: { [direction === 'asc' ? '$gt' : '$lt']: after } }
+            ? { [this.gameDocMap[sort] as string]: { [direction === 'asc' ? '$gt' : '$lt']: after } }
             : {};
 
         // Date-Range filter 
@@ -74,20 +91,10 @@ export class Game extends BaseModel {
         };
 
         const docs = await Game.collection.find(fullFilter)
-            .sort({ [sort]: direction === 'asc' ? 1 : -1 })
+            .sort({ [this.gameDocMap[sort] as string]: direction === 'asc' ? 1 : -1 })
             .limit(limit)
             .toArray();
     
-        return docs.map(doc => ({
-            _id: doc._id,
-            id: doc.fixture.id,
-            name: `${doc.teams.home.name} vs ${doc.teams.away.name}`,
-            injestion_info: doc.injestion_info,
-            date: doc.fixture.date,
-            league: doc.league.name,
-            country: doc.league.country,
-            home: doc.teams.home.name,
-            away: doc.teams.away.name,
-        }));
+        return docs.map(doc => this.mapDoc<GameData>(doc, this.gameDocMap));;
     }
 }
