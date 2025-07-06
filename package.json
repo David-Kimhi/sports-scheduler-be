@@ -3,8 +3,8 @@
   "type": "module",
   "scripts": {
     "build": "tsc && npm run copy:json",
-    "copy:json": "rsync -av --include='*/' --include='*.json' --exclude='*' scraper/src/ dist/scraper/src",
-    "start": "node dist/scraper/src/fetch_with_flags.js"
+    "copy:json": "rsync -av --include='*/' --include='*.json' --exclude='*' ./ ./dist",
+    "start": "node dist/sports/football/scraper/fetch_with_flags.ts"
   },
   "devDependencies": {
     "@types/axios": "^0.14.4",
