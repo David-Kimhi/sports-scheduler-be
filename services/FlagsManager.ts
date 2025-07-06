@@ -6,7 +6,7 @@ export class FlagsManager {
   private flagFile: string;
   
   constructor() {
-    this.flagFile = path.join(BASE_PATH, 'data', 'flags.json');;
+    this.flagFile = path.join(BASE_PATH, 'data', 'flags.json');
   }
 
   private load(): Record<string, boolean> {

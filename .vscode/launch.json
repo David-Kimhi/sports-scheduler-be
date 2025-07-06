@@ -32,9 +32,20 @@
             "args": ["/Users/david/Documents/VSCode Projects/sports-scheduler-be/scraper/src/sports/football/fetchGames.ts"],
             "cwd": "${workspaceFolder}",
             "envFile": "${workspaceFolder}/.env",
-             "console": "integratedTerminal"        }
-       
-
+             "console": "integratedTerminal"        
+        },
+        {
+            "type": "node",
+            "request": "attach",
+            "name": "Attach to Docker",
+            "port": 9229,
+            "address": "localhost",
+            "restart": false,
+            "localRoot": "${workspaceFolder}",
+            "remoteRoot": "/app",
+            "protocol": "inspector"
+          }
+          
     ]
 }
     
