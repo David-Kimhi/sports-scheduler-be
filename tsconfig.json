@@ -4,14 +4,15 @@
       "target": "ESNext",
       "baseUrl": "./src",
       "lib": ["ES2024", "DOM", "DOM.Iterable"],
-      "allowJs": true,
+      // "allowJs": true,
       "jsx": "preserve",
       "esModuleInterop": true,
       "module": "ESNext",
-      "moduleResolution": "bundler",
+      "moduleResolution": "node",
       "forceConsistentCasingInFileNames": true,
       "useUnknownInCatchVariables": true,
       "noImplicitOverride": true,
+      "resolveJsonModule": true,
       "verbatimModuleSyntax": true,
       "paths": {
         "test/*": ["test/*"],
@@ -19,9 +20,9 @@
         "*": ["*"]
       },
       "typeRoots": ["src/types", "node_modules/@types"],
-      "types": [],
-      "outDir": "dist"           // ✅ where compiled JS files go
+      "types": ["node"],
+      "outDir": "dist"           // where compiled JS files go
     },
-    "include": ["**/*.ts"]           // ✅ makes sure your code is compiled
+    "include": ["**/*.ts"]        
 }
   

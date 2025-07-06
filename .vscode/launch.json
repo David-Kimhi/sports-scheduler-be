@@ -17,7 +17,8 @@
             "args": ["${file}"],
             "cwd": "${workspaceFolder}",
             "envFile": "${workspaceFolder}/.env",
-             "console": "integratedTerminal"        
+            "console": "integratedTerminal"
+        
         }
         , {
             "type": "node",

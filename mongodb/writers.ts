@@ -1,9 +1,13 @@
-import { MongoClient, Db, Collection,} from 'mongodb';
+// installed modules
+import { Db, Collection,} from 'mongodb';
+import os from 'os';
 import type { Document, OptionalUnlessRequiredId, BulkWriteResult, InsertOneResult, InsertManyResult } from 'mongodb';
-import { buildFilter, getMongoDb, closeMongoDb } from './helpers.js';
-import { URI } from './config.js';
 import pLimit from 'p-limit';
+
+// local files
+import { buildFilter } from './helpers.js';
 import { logger } from './config.js';
+
 
 
 // limit writes to mongoDB to 1 in paralel
@@ -67,7 +71,7 @@ export async function writeUpsert<T extends Document>(
     ingestion_info: {
       fetched_at: new Date(),
       source: source ?? 'unknown',
-      inserted_by: process.env.CURR_ENV
+      inserted_by: os.hostname()
     }
   }));
 
