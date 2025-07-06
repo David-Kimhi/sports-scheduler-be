@@ -4,6 +4,7 @@ import { fetchAndStoreFixtures } from './services/fetchGames.js';
 import { FlagsManager } from '../../../services/FlagsManager.js';
 import { SPORT, MODULE } from './config.js';
 import { getMongoDb, closeMongoDb} from '../../../mongodb/helpers.js';
+import { fetchAndStoreTeams } from './services/fetchTeams.js';
 
 const flagsManager = new FlagsManager()
 
@@ -20,6 +21,9 @@ await flagsManager.runOnce("fetchLeagues", fetchAndStoreLeauges, db);
 
 // Fixtures
 await flagsManager.runOnce("fetchFixtures", fetchAndStoreFixtures, db);
+
+// Teams
+await flagsManager.runOnce("fetchTeams", fetchAndStoreTeams, db)
 
 // close connection
 await closeMongoDb(SPORT, MODULE)

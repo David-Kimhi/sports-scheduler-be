@@ -226,5 +226,11 @@
   "fetchGamesLeague_71_2021": true,
   "fetchGamesLeague_71_2022": true,
   "fetchGamesLeague_71_2023": true,
-  "fetchGamesLeague_78_2021": false
+  "fetchGamesLeague_78_2021": false,
+  "fetchTeamsLeague_71_2021": true,
+  "fetchTeamsLeague_71_2022": true,
+  "fetchTeamsLeague_71_2023": true,
+  "fetchTeamsLeague_78_2021": true,
+  "fetchTeamsLeague_78_2022": true,
+  "fetchTeamsLeague_78_2023": false
 }

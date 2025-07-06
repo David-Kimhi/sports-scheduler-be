@@ -1,6 +1,6 @@
 import { fetchCollection } from '../../../../mongodb/fetchers.js';
 import { migrateDateFields, wrapperWrite, writeUpsert } from '../../../../mongodb/writers.js';
-import { SPORT, FIRST_LOAD, FREE_YEARS_FOOTBALL} from '../config.js';
+import { SPORT, FREE_YEARS_FOOTBALL, API_SOURCE} from '../config.js';
 import { fetchSportData } from '../../../../services/apiSportsFetcher.js';
 import { delaySeconds } from '../../../../helpers.js';
 import { MODULE } from '../config.js';
@@ -10,8 +10,6 @@ import { Db } from 'mongodb';
 import { FlagsManager } from '../../../../services/FlagsManager.js';
 import { Game } from '../../db/Game.js';
 import { GAMES_COLL_NAME } from '../../config.js';
-
-const cwd = process.cwd();
 
 // create a logger
 const logger = createLogger(MODULE, SPORT);
@@ -51,11 +49,11 @@ async function handleLeague(league: any, db: Db, customYear?: IntegerType) {
   }
 
   if (fixtures.length) {
-    await wrapperUpsert(fixtures, 'fixture.id,league.season,league.id');
+    await wrapperUpsert(fixtures, 'fixture.id,league.season,league.id', API_SOURCE);
   }
 }
 
-export async function fetchAndStoreFixtures(db: Db, specific_season?: number | null) {
+export async function fetchAndStoreFixtures(db: Db) {
   const leagues = await fetchCollection(SPORT, 'leagues')
 
 

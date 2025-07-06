@@ -36,11 +36,9 @@ export function wrapperWrite<T extends Document>(
   appName: string = 'scraper'
 ): (...args: any[]) => Promise<any> {
   return async function (...args: any[]): Promise<any> {
-    const client = new MongoClient(URI);
-
     const collection = db.collection<T>(collectionName);
 
-    limitWrites( () => fn(collection, ...args).then(
+    return limitWrites( () => fn(collection, ...args).then(
         results => logWriteResult(results)
       ).catch(
         err => logger.error(`Write error:`, err)
@@ -67,7 +65,7 @@ export async function writeUpsert<T extends Document>(
   const enrichedData = data.map(doc => ({
     ...doc,
     ingestion_info: {
-      fetched_at: new Date().toISOString(),
+      fetched_at: new Date(),
       source: source ?? 'unknown',
       inserted_by: process.env.CURR_ENV
     }

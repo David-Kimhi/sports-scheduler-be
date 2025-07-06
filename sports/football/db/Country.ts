@@ -14,6 +14,16 @@ export class Country extends BaseModel {
     static async init(dbName: string, collectionName: string, appName = 'api') {
         Country.collection = await this.initCollection(dbName, collectionName, appName);
     }
+
+
+    static gameDocMap: Record<keyof CountryData, string | ((doc: any) => any)> = {
+        _id: '_id',
+        id: 'name',
+        injestion_info: 'injestion_info',
+        code: 'code',
+        flagImage: 'flagImage',
+        flagContentType: 'flagContentType'
+    };
   
     // Default game object 
     static default(): CountryData {

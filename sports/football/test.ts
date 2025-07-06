@@ -1,7 +1,11 @@
-import { closeMongoDb } from "../../mongodb/helpers.js";
+import { closeMongoDb, getMongoDb } from "../../mongodb/helpers.js";
 import { SPORT } from "./config.js";
 import { MODULE } from "./scraper/config.js";
+import { fetchAndStoreTeams } from "./scraper/services/fetchTeams.js";
 import { migrageGameDateFields } from "./scraper/services/fetchGames.js";
 
-await migrageGameDateFields();
-await closeMongoDb(SPORT, MODULE)
+
+const db = await getMongoDb(SPORT, 'Scraper');
+await fetchAndStoreTeams(db);
+
+await closeMongoDb(SPORT, 'Scraper')
