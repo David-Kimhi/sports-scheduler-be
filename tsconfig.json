@@ -3,6 +3,7 @@
       "strict": true,
       "target": "ESNext",
       "baseUrl": "./",
+      "rootDir": ".",              
       "lib": ["ES2024", "DOM", "DOM.Iterable"],
       // "allowJs": true,
       "jsx": "preserve",
