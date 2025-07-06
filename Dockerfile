@@ -20,5 +20,8 @@ RUN npm run build
 # install dotenv and copy it
 RUN npm install dotenv
 
+ENV NODE_PATH=/root/sports-scheduler-be/node_modules
+
+
 # Command to run the app
-CMD ["npm", "start"]
+CMD ["sh", "-c", "NODE_PATH=$NODE_PATH node ./dist/fetch_with_flags.js"]
