@@ -2,7 +2,7 @@
     "compilerOptions": {
       "strict": true,
       "target": "ESNext",
-      "baseUrl": "./",
+      "baseUrl": "./dist",
       "rootDir": ".",              
       "lib": ["ES2024", "DOM", "DOM.Iterable"],
       // "allowJs": true,
