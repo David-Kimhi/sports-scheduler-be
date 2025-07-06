@@ -1,0 +1,10 @@
+docker: invalid env file (.env): variable 'CURR_ENV ' contains whitespaces.
+See 'docker run --help'.
+
+> start
+> node dist/scraper/src/fetch_with_flags.js
+
+
+> start
+> node dist/scraper/src/fetch_with_flags.js
+

@@ -1,11 +1,11 @@
 # Base image with Node.js
-FROM node:18
+FROM node:20
 
 # Install rsync
 RUN apt update && apt install -y rsync
 
 # Set working directory
-WORKDIR /root/sports-scheduler-be/
+WORKDIR /root/sports-scheduler-be
 
 # Copy package files and install dependencies
 COPY package*.json ./
