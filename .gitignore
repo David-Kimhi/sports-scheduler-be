@@ -4,4 +4,4 @@ __pycache__/
 *.log
 dist/
 .DS_Store
-sports/football/test.ts
+**/test.ts
