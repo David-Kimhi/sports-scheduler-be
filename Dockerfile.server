@@ -19,4 +19,4 @@ RUN npm run build
 
 RUN npm install dotenv
 
-CMD ["npm", "start:server"]
+CMD ["npm", "run", "start:server"]

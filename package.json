@@ -2,8 +2,7 @@
   "name": "setup-scraper",
   "type": "module",
   "scripts": {
-    "build": "tsc && npm run copy:json",
-    "copy:json": "rsync -av --include='*/' --include='*.json' --exclude='*' --exclude 'node_modules/' ./ ./dist",
+    "build": "tsc",
     "start:scraper": "node dist/scrape.js",
     "start:server": "node dist/server.js"
   },
