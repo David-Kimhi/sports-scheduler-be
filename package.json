@@ -4,7 +4,8 @@
   "scripts": {
     "build": "tsc && npm run copy:json",
     "copy:json": "rsync -av --include='*/' --include='*.json' --exclude='*' --exclude 'node_modules/' ./ ./dist",
-    "start": "node dist/fetch_with_flags.js"
+    "start:scraper": "node dist/scrape.js",
+    "start:server": "node dist/server.js"
   },
   "devDependencies": {
     "@types/axios": "^0.14.4",

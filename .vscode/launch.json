@@ -8,7 +8,22 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch TypeScript with ts-node",
+            "name": "Launch Scraper",
+            "runtimeExecutable": "node",
+            "runtimeArgs": [
+                "--loader",
+                "ts-node/esm"
+            ],
+            "args": ["${workspaceFolder}/scrape.ts"],
+            "cwd": "${workspaceFolder}",
+            "envFile": "${workspaceFolder}/.env",
+            "console": "integratedTerminal"
+        
+        }
+        , {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Current file (ts-node)",
             "runtimeExecutable": "node",
             "runtimeArgs": [
                 "--loader",
@@ -22,28 +37,13 @@
         }
         , {
             "type": "node",
-            "request": "launch",
-            "name": "Launch  fetchGames",
-            "runtimeExecutable": "node",
-            "runtimeArgs": [
-                "--loader",
-                "ts-node/esm"
-            ],
-            "args": ["/Users/david/Documents/VSCode Projects/sports-scheduler-be/scraper/src/sports/football/fetchGames.ts"],
-            "cwd": "${workspaceFolder}",
-            "envFile": "${workspaceFolder}/.env",
-             "console": "integratedTerminal"        
-        },
-        {
-            "type": "node",
             "request": "attach",
             "name": "Attach to Docker",
             "port": 9229,
             "address": "localhost",
             "restart": false,
             "localRoot": "${workspaceFolder}",
-            "remoteRoot": "/app",
-            "protocol": "inspector"
+            "remoteRoot": "/app"
           }
           
     ]

@@ -1,0 +1,22 @@
+# Base image with Node.js
+FROM node:20
+
+# Install rsync
+RUN apt update && apt install -y rsync
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files and install dependencies
+COPY package*.json ./
+RUN npm install
+
+# Copy the rest of the project files
+COPY . .
+
+# Build TypeScript files
+RUN npm run build
+
+RUN npm install dotenv
+
+CMD ["npm", "start:scraper"]
