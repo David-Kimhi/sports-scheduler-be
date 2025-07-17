@@ -1,5 +1,5 @@
 import { Collection, type Document } from 'mongodb';
-import type { BaseDocument } from './BaseDocument.js';
+import type { BaseDocument, QueryParams } from './BaseInterfaces.js';
 import { BaseModel } from './BaseModel.js';
 import { SMALL_L } from '../config/index.js';
 
@@ -48,14 +48,9 @@ export class Game extends BaseModel {
     }
 
 
-    static async getGames(
-        name: string
-        , after: Date
-        , sort: string
-        , direction: string
-        , limit: number = SMALL_L
-        , from?: Date
-        , to?: Date
+    static async getByName({
+        name, after, sort = 'date', direction = 'desc', limit = SMALL_L, from, to
+    }: QueryParams
     ): Promise<GameData[]> {
         const regex = new RegExp(name, 'i');
 
@@ -68,9 +63,10 @@ export class Game extends BaseModel {
           };
         
         // Pagination (optional)
-        const paginationFilter = after
-            ? { [this.gameDocMap[sort] as string]: { [direction === 'asc' ? '$gt' : '$lt']: after } }
-            : {};
+        let paginationFilter: Record<string, any> = {};
+        if (after) {
+            paginationFilter = { [this.gameDocMap[sort] as string]: { [direction === 'asc' ? '$gt' : '$lt']: after } }
+        }
 
         // Date-Range filter 
         let dateFilter: Record<string, any> = {};
@@ -87,7 +83,7 @@ export class Game extends BaseModel {
             : {};
     
         const fullFilter = {
-        $and: [nameFilter, paginationFilter, dateFilter]
+            $and: [nameFilter, paginationFilter, dateFilter]
         };
 
         const docs = await Game.collection.find(fullFilter)
@@ -95,6 +91,6 @@ export class Game extends BaseModel {
             .limit(limit)
             .toArray();
     
-        return docs.map(doc => this.mapDoc<GameData>(doc, this.gameDocMap));;
+        return docs.map(doc => this.mapDoc<GameData>(doc, this.gameDocMap));
     }
 }

@@ -7,8 +7,6 @@ import { LARGE_L, SMALL_L, GAMES_COLL_NAME, SPORT } from '../config/index.js';
 const logger = createLogger('API', SPORT)
 
 const router = express.Router();
-Game.init(SPORT, GAMES_COLL_NAME, 'api')
-
 
 async function handleGamesReq(req: Request, res: Response) {
 
@@ -42,7 +40,7 @@ async function handleGamesReq(req: Request, res: Response) {
     const { sort, direction, limit, name, after, from, to} = result.data;
 
     try {
-        const games = await Game.getGames(name, after, sort, direction, limit);
+        const games = await Game.getByName({name, after, sort, direction, limit});
         res.json(games);
       } catch (err: any) {
         logger.error(`Error fetching games: ${err}`);

@@ -1,6 +1,7 @@
 import { Collection, type Document } from 'mongodb';
-import type { BaseDocument } from './BaseDocument.js';
+import type { BaseDocument, QueryParams } from './BaseInterfaces.js';
 import { BaseModel } from './BaseModel.js';
+import { SMALL_L } from '../config/api.js';
 
 export interface LeagueData extends BaseDocument {
   country: string;
@@ -26,11 +27,12 @@ export class League extends BaseModel {
         };
     }
 
-
-    static async findByName(name: string): Promise<LeagueData[]> {
+    static async getByName(
+        {name, limit = SMALL_L}: QueryParams
+    ): Promise<LeagueData[]> {
         const regex = new RegExp(name, 'i');
 
-        const docs = await League.collection.find({'league.name': regex}).toArray();
+        const docs = await League.collection.find({'league.name': regex}).limit(limit).toArray();
 
     
         return docs.map(doc => ({

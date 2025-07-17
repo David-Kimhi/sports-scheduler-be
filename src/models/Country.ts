@@ -1,6 +1,6 @@
 import { Collection, type Document, Binary } from 'mongodb';
 import { BaseModel } from './BaseModel.js';
-import { type BaseDocument } from './BaseDocument.js';
+import { type BaseDocument, type QueryParams } from './BaseInterfaces.js';
 import { SMALL_L } from '../config/index.js';
 
 export interface CountryData extends BaseDocument {
@@ -35,7 +35,9 @@ export class Country extends BaseModel {
     }
 
 
-    static async findByName(name: string, limit=SMALL_L): Promise<Country[]> {
+    static async getByName(
+        {name, limit=SMALL_L}: QueryParams
+    ): Promise<Country[]> {
         const regex = new RegExp(name, 'i');
 
         const docs = await Country.collection.find({'name': regex}).limit(limit).toArray();

@@ -1,6 +1,6 @@
 import { Collection, ObjectId, type Document } from "mongodb";
 import { getMongoDb } from "../services/mongodb_conn.service.js";
-import type { BaseDocument } from "./BaseDocument.js";
+import type { BaseDocument } from "./BaseInterfaces.js";
 
 export class BaseModel {
 
@@ -40,4 +40,6 @@ export class BaseModel {
 
       return result as T;
     }
+
+    
 }
