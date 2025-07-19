@@ -14,7 +14,8 @@ async function handleGamesReq(req: Request, res: Response) {
         sort: z.enum(['date', 'name']).optional().default('date'),
         direction: z.enum(['asc', 'desc']).optional().default('desc'),
         limit: z.coerce.number().min(1).max(LARGE_L).optional().default(SMALL_L),
-        name: z.string().optional().default(''),
+        word: z.string().optional().default(''),
+        field: z.string().optional().default('name'),
         after: z.preprocess(
             (val) => (val ? new Date(val as string) : new Date()),
             z.date()
@@ -37,12 +38,12 @@ async function handleGamesReq(req: Request, res: Response) {
         return;
     }
     
-    const { sort, direction, limit, name, after, from, to} = result.data;
+    const { sort, direction, limit, word, field, after, from, to} = result.data;
 
     try {
-        const games = await Game.getByName({name, after, sort, direction, limit});
+        const games = await Game.fetchByWord({word, field, after, sort, direction, limit});
         res.json(games);
-      } catch (err: any) {
+    } catch (err: any) {
         logger.error(`Error fetching games: ${err}`);
         res.status(500).json({ error: 'Internal server error' });
       }

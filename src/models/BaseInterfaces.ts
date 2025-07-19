@@ -9,7 +9,8 @@ export interface BaseDocument {
 };
 
 export interface QueryParams {
-  name: string;
+  word: string;
+  field: string;
   after?: Date;
   from?: Date;
   to?: Date;

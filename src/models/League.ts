@@ -16,6 +16,16 @@ export class League extends BaseModel {
     static async init(dbName: string, collectionName: string, appName = 'api') {
         League.collection = await this.initCollection(dbName, collectionName, appName);
     }
+
+    static leagueDocMap: Record<keyof LeagueData, string> = {
+        _id: '_id',
+        id: 'league.id',
+        injestion_info: 'injestion_info',
+        name: 'league.name',
+        country: 'country.name',
+        type: 'league.type',
+        logo: 'league.logo',
+    };
     
     // Default game object (e.g., for creating new records)
     static default(): LeagueData {
@@ -27,22 +37,15 @@ export class League extends BaseModel {
         };
     }
 
-    static async getByName(
-        {name, limit = SMALL_L}: QueryParams
+    static async fetchByWord(
+        {word, field = 'name', limit = SMALL_L}: QueryParams & { field?: keyof LeagueData }
     ): Promise<LeagueData[]> {
-        const regex = new RegExp(name, 'i');
+        const regex = new RegExp(word, 'i');
 
-        const docs = await League.collection.find({'league.name': regex}).limit(limit).toArray();
+        const dbField = this.leagueDocMap[field];
 
-    
-        return docs.map(doc => ({
-            _id: doc._id,
-            id: doc.league.id,
-            name: doc.league.name,
-            injestion_info: doc.injestion_info,
-            country: doc.country.name,
-            type: doc.league.type,
-            logo: doc.league.logo
-        }));
+        const docs = await League.collection.find({[dbField]: regex}).limit(limit).toArray();
+
+        return docs.map(doc => this.mapDoc(doc, this.leagueDocMap));
     }
 }

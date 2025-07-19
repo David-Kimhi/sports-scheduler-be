@@ -16,9 +16,9 @@ export class Country extends BaseModel {
     }
 
 
-    static gameDocMap: Record<keyof CountryData, string | ((doc: any) => any)> = {
+    static countryDocMap: Record<keyof CountryData, string> = {
         _id: '_id',
-        id: 'name',
+        name: 'name',
         injestion_info: 'injestion_info',
         code: 'code',
         flagImage: 'flagImage',
@@ -35,20 +35,15 @@ export class Country extends BaseModel {
     }
 
 
-    static async getByName(
-        {name, limit=SMALL_L}: QueryParams
+    static async fetchByWord(
+        {word, field = 'name', limit=SMALL_L}: QueryParams & { field?: keyof CountryData }
     ): Promise<Country[]> {
-        const regex = new RegExp(name, 'i');
+        const regex = new RegExp(word, 'i');
 
-        const docs = await Country.collection.find({'name': regex}).limit(limit).toArray();
+        const dbField = this.countryDocMap[field];
 
-    
-        return docs.map(doc => ({
-            _id: doc._id,
-            name: doc.name,
-            code: doc.code,
-            flagImage: doc.flagImage,
-            flagContentType: doc.flagContentType
-        }));
+        const docs = await Country.collection.find({[dbField]: regex}).limit(limit).toArray();
+
+        return docs.map(doc => this.mapDoc(doc, this.countryDocMap));
     }
 }

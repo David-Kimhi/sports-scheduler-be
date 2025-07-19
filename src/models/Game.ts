@@ -48,11 +48,11 @@ export class Game extends BaseModel {
     }
 
 
-    static async getByName({
-        name, after, sort = 'date', direction = 'desc', limit = SMALL_L, from, to
+    static async fetchByWord({
+        word, after, field, sort = 'date', direction = 'desc', limit = SMALL_L, from, to
     }: QueryParams
     ): Promise<GameData[]> {
-        const regex = new RegExp(name, 'i');
+        const regex = new RegExp(word, 'i');
 
         // name filter
         const nameFilter = {

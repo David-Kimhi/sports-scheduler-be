@@ -13,7 +13,8 @@ const COLLECTIONS = [Game, Country, League];
 
 // Zod schema for query params
 const querySchema = z.object({
-  query: z.string().min(1, 'Query must be a non-empty string'),
+  word: z.string().min(1, 'Query must be a non-empty string'),
+  field: z.string().optional().default('name'),
   limit: z.coerce.number().min(1).max(LARGE_L).optional().default(SMALL_L)
 });
 
@@ -25,12 +26,12 @@ router.get('/', async (req: Request, res: Response) => {
         return;
     }
 
-    const { query, limit } = parseResult.data;
+    const { word, field, limit } = parseResult.data;
     try {
 
     const searchResults = await Promise.all(
         COLLECTIONS.map(async (model) => {
-            const results = await model.getByName({name: query, limit: limit})
+            const results = await model.fetchByWord({word, field, limit})
             return { [model.collection.collectionName]: results };
         })
     );
