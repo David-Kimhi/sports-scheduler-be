@@ -1,13 +1,14 @@
 import { Collection, ObjectId, type Document } from "mongodb";
 import { getMongoDb } from "../services/mongodb_conn.service.js";
 import type { BaseDocument } from "./BaseInterfaces.js";
+import { API_MODULE } from "../config/api.js";
 
 export class BaseModel {
 
     static async initCollection(
       dbName: string,
       collectionName: string,
-      appName: string = 'api'
+      appName: string = API_MODULE
     ): Promise<Collection<Document>> {
       const db = await getMongoDb(dbName, appName);
       return db.collection<Document>(collectionName);

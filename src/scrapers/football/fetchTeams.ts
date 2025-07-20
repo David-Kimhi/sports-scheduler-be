@@ -6,13 +6,13 @@ import {
   , createLogger
   , FlagsManager 
 } from '../../services/index.js';
-import { SPORT, FREE_YEARS_FOOTBALL, API_SOURCE_NAME, API_PLAN} from '../../config/index.js';
+import { SPORT, FREE_YEARS_FOOTBALL, API_SOURCE_NAME, SCRAPER_MODULE, IS_FREE_PLAN} from '../../config/index.js';
 import { delaySeconds } from '../../utils/index.js';
 import type { IntegerType } from 'mongodb';
 import { Db } from 'mongodb';
 
 // create a logger
-const logger = createLogger('Scraper', SPORT);
+const logger = createLogger(SCRAPER_MODULE, SPORT);
 
 const dimention = 'teams'
 const flagsManager = new FlagsManager()
@@ -21,18 +21,18 @@ const flagsManager = new FlagsManager()
 async function handleLeague(league: any, db: Db, customYear?: IntegerType) {
   const wrapperUpsert = wrapperWrite(writeUpsert, db, dimention);
 
-  if (process.env.API_PLAN === "FREE") {
+  if (IS_FREE_PLAN) {
     await delaySeconds(6);
   }
 
   const currentSeason = league.seasons?.find((s: any) => s.current);
 
-  if (!currentSeason && API_PLAN != "FREE") {
+  if (!currentSeason && IS_FREE_PLAN) {
     logger.error(`No current season found for league ${league.name}`);
     return;
   }
 
-  const seasonToFetch = (API_PLAN === "FREE") ? customYear : currentSeason.year;
+  const seasonToFetch = IS_FREE_PLAN ? customYear : currentSeason.year;
   const params = {
     league: league.league.id,
     season: seasonToFetch,
@@ -75,7 +75,7 @@ export async function fetchAndStoreTeams(db: Db) {
 
   for (const league of leagues) {
 
-    if (process.env.API_PLAN === "FREE") {
+    if (IS_FREE_PLAN) {
       for (const year of FREE_YEARS_FOOTBALL) {
         await flagsManager.runOnce(
           `fetchTeamsLeague_${league.league.id}_${year}`,

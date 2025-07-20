@@ -1,4 +1,4 @@
-import { SPORT, FREE_YEARS_FOOTBALL, API_SOURCE_NAME, GAMES_COLL_NAME} from '../../config/index.js';
+import { SPORT, FREE_YEARS_FOOTBALL, API_SOURCE_NAME, GAMES_COLL_NAME, SCRAPER_MODULE, IS_FREE_PLAN} from '../../config/index.js';
 import { delaySeconds } from '../../utils/index.js';
 import { createLogger, FlagsManager, fetchSportData, migrateDateFields, wrapperWrite, writeUpsert, fetchCollection } from '../../services/index.js';
 import type { IntegerType } from 'mongodb';
@@ -6,7 +6,7 @@ import { Db } from 'mongodb';
 import { Game } from '../../models/index.js';
 
 // create a logger
-const logger = createLogger('Scraper', SPORT);
+const logger = createLogger(SCRAPER_MODULE, SPORT);
 
 const dimention = 'fixtures'
 const flagsManager = new FlagsManager()
@@ -15,7 +15,7 @@ const flagsManager = new FlagsManager()
 async function handleLeague(league: any, db: Db, customYear?: IntegerType) {
   const wrapperUpsert = wrapperWrite(writeUpsert, db, dimention);
 
-  if (process.env.API_PLAN === "FREE") {
+  if (IS_FREE_PLAN) {
     await delaySeconds(6);
   }
 
@@ -26,7 +26,7 @@ async function handleLeague(league: any, db: Db, customYear?: IntegerType) {
     return;
   }
 
-  const seasonToFetch = (process.env.API_PLAN === "FREE") ? customYear : currentSeason.year;
+  const seasonToFetch = (IS_FREE_PLAN) ? customYear : currentSeason.year;
   const params = {
     league: league.league.id,
     season: seasonToFetch,
@@ -58,7 +58,7 @@ export async function fetchAndStoreFixtures(db: Db) {
 
   for (const league of leagues) {
 
-    if (process.env.API_PLAN === "FREE") {
+    if (IS_FREE_PLAN) {
       for (const year of FREE_YEARS_FOOTBALL) {
         await flagsManager.runOnce(
           `fetchGamesLeague_${league.league.id}_${year}`,
@@ -77,6 +77,6 @@ export async function fetchAndStoreFixtures(db: Db) {
 }
 
 export async function migrageGameDateFields(){
-  await Game.init(SPORT, GAMES_COLL_NAME, 'Scraper');
+  await Game.init(SPORT, GAMES_COLL_NAME, SCRAPER_MODULE);
   await migrateDateFields(Game.collection, Game.dateFields);
 }

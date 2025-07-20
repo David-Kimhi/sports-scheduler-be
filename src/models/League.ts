@@ -1,7 +1,7 @@
 import { Collection, type Document } from 'mongodb';
 import type { BaseDocument, QueryParams } from './BaseInterfaces.js';
 import { BaseModel } from './BaseModel.js';
-import { SMALL_L } from '../config/api.js';
+import { API_MODULE, SMALL_L } from '../config/api.js';
 
 export interface LeagueData extends BaseDocument {
   country: string;
@@ -13,7 +13,7 @@ export class League extends BaseModel {
     static collection: Collection<Document>;
 
 
-    static async init(dbName: string, collectionName: string, appName = 'api') {
+    static async init(dbName: string, collectionName: string, appName = API_MODULE) {
         League.collection = await this.initCollection(dbName, collectionName, appName);
     }
 

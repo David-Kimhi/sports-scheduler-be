@@ -6,7 +6,7 @@ import leaguesRouter from './league.routs.js';
 const router = express.Router();
 
 router.use('/games', gamesRouter); 
-router.use('/league', leaguesRouter)
+router.use('/leagues', leaguesRouter)
 router.use('/search', searchRouter);
 
 export default router;

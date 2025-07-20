@@ -1,7 +1,7 @@
 import { Collection, type Document } from 'mongodb';
 import type { BaseDocument, QueryParams } from './BaseInterfaces.js';
 import { BaseModel } from './BaseModel.js';
-import { SMALL_L } from '../config/index.js';
+import { API_MODULE, SMALL_L } from '../config/index.js';
 
 export interface GameData extends BaseDocument {
   date: string;
@@ -14,7 +14,7 @@ export interface GameData extends BaseDocument {
 export class Game extends BaseModel {
     static collection: Collection<Document>;
 
-    static async init(dbName: string, collectionName: string, appName = 'api') {
+    static async init(dbName: string, collectionName: string, appName = API_MODULE) {
         Game.collection = await this.initCollection(dbName, collectionName, appName);
     }
 
@@ -54,13 +54,24 @@ export class Game extends BaseModel {
     ): Promise<GameData[]> {
         const regex = new RegExp(word, 'i');
 
-        // name filter
-        const nameFilter = {
-            $or: [
-              { [this.gameDocMap.home as string]: regex },
-              { [this.gameDocMap.away as string]: regex }
-            ]
-          };
+        // build filter for the field
+        const dbField = this.gameDocMap[field];
+        let fieldFilter;
+        if (field === 'name') {
+            fieldFilter = {
+                $or: [
+                  { [this.gameDocMap.home as string]: regex },
+                  { [this.gameDocMap.away as string]: regex }
+                ]
+              };
+        } else if (typeof dbField === 'string') {
+            // Now TypeScript knows it's a string here
+            fieldFilter = { [dbField]: regex };
+        } else {
+            // This would only run if someone used a computed field (function),
+            // but since you "handled" those in the `if`, this is just a safeguard.
+            throw new Error(`Field ${field} does not map to a string field`);
+        }
         
         // Pagination (optional)
         let paginationFilter: Record<string, any> = {};
@@ -83,7 +94,7 @@ export class Game extends BaseModel {
             : {};
     
         const fullFilter = {
-            $and: [nameFilter, paginationFilter, dateFilter]
+            $and: [fieldFilter, paginationFilter, dateFilter]
         };
 
         const docs = await Game.collection.find(fullFilter)
