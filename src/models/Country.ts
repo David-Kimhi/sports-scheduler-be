@@ -4,8 +4,8 @@ import { type BaseDocument, type QueryParams } from './BaseInterfaces.js';
 import { API_MODULE, SMALL_L } from '../config/index.js';
 
 export interface CountryData extends BaseDocument {
-  flagImage: Binary; 
-  flagContentType: string;
+  code: string,
+  flag: string
 }
 
 export class Country extends BaseModel {
@@ -21,17 +21,25 @@ export class Country extends BaseModel {
         name: 'name',
         injestion_info: 'injestion_info',
         code: 'code',
-        flagImage: 'flagImage',
-        flagContentType: 'flagContentType'
+        flag: 'flag'
     };
   
     // Default game object 
     static default(): CountryData {
         return {
             ...this.defaultFields(),
-            flagImage: new Binary(),
-            flagContentType: ''
+            code: '',
+            flag: ''
         };
+    }
+
+    public static async fetchAll() {
+        if (!this.collection) {
+          throw new Error(`Collection not initialized for ${this.name}`);
+        }
+
+        const docs = await this.collection.find().toArray()
+        return docs.map(doc => this.mapDoc(doc, this.countryDocMap))
     }
 
 
@@ -46,4 +54,6 @@ export class Country extends BaseModel {
 
         return docs.map(doc => this.mapDoc(doc, this.countryDocMap));
     }
+
+
 }

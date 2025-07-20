@@ -2,9 +2,9 @@ import express, { type Request, type Response } from 'express';
 import { Game } from '../models/Game.js';
 import z from 'zod';
 import { createLogger } from '../services/index.js';
-import { LARGE_L, SMALL_L, GAMES_COLL_NAME, SPORT } from '../config/index.js';
+import { LARGE_L, SMALL_L, SPORT, API_MODULE } from '../config/index.js';
 
-const logger = createLogger('API', SPORT)
+const logger = createLogger(API_MODULE, SPORT)
 
 const router = express.Router();
 

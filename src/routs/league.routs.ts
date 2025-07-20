@@ -1,7 +1,7 @@
 import express, { type Request, type Response } from 'express';
-import { API_MODULE, LEAGUES_COLL_NAME, SPORT } from "../config";
-import { createLogger } from "../services";
-import { League, type LeagueData } from '../models';
+import { API_MODULE, SPORT } from "../config/index.js";
+import { createLogger } from "../services/index.js";
+import { League, type LeagueData } from '../models/index.js';
 import { z } from 'zod';
 
 const logger = createLogger(API_MODULE, SPORT);
