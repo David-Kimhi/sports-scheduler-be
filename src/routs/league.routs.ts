@@ -39,7 +39,24 @@ router.get('/', async (req: Request, res: Response) => {
     logger.error('[Search Route] Error:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
+});
 
+
+router.get('/fetchAll', async (req: Request, res: Response) => {
+
+    // Reject if any query parameters are present
+    if (Object.keys(req.query).length > 0) {
+        res.status(400).json({ error: 'No parameters allowed for this endpoint' });
+    }
+
+    try {
+        const results = await model.fetchAll();
+        res.json(results);
+    } catch (err: any) {
+        logger.error(`Error fetching countries: ${err}`);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+    
 });
 
 export default router;

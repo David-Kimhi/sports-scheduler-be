@@ -9,6 +9,6 @@ const router = express.Router();
 router.use('/games', gamesRouter); 
 router.use('/leagues', leaguesRouter);
 router.use('/search', searchRouter);
-router.use('/country', countryRouter);
+router.use('/countries', countryRouter);
 
 export default router;

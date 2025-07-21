@@ -37,6 +37,16 @@ export class League extends BaseModel {
         };
     }
 
+
+    static async fetchAll() {
+        if (!this.collection) {
+            throw new Error(`Collection not initialized for ${this.name}`);
+          }
+  
+          const docs = await this.collection.find().toArray()
+          return docs.map(doc => this.mapDoc(doc, this.leagueDocMap))
+    }
+
     static async fetchByWord(
         {word, field = 'name', limit = SMALL_L}: QueryParams & { field?: keyof LeagueData }
     ): Promise<LeagueData[]> {
