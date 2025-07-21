@@ -53,7 +53,7 @@ router.get('/fetchAll', async (req: Request, res: Response) => {
         const results = await model.fetchAll();
         res.json(results);
     } catch (err: any) {
-        logger.error(`Error fetching countries: ${err}`);
+        logger.error(`Error fetching leagues: ${err}`);
         res.status(500).json({ error: 'Internal server error' });
     }
     

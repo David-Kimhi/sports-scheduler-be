@@ -10,5 +10,6 @@ router.use('/games', gamesRouter);
 router.use('/leagues', leaguesRouter);
 router.use('/search', searchRouter);
 router.use('/countries', countryRouter);
+router.use('/teams', countryRouter);
 
 export default router;
