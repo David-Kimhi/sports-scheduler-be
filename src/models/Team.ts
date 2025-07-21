@@ -19,7 +19,7 @@ export class Team extends BaseModel {
     }
 
 
-    static countryDocMap: Record<keyof TeamData, string> = {
+    static teamDocMap: Record<keyof TeamData, string> = {
         _id: '_id',
         id: 'team.id',
         name: 'team.name',
@@ -41,13 +41,14 @@ export class Team extends BaseModel {
         };
     }
 
-    public static async fetchAll(season: number = 2023) {
+    public static async fetchAll(field = 'season', word: any = 2023) {
         if (!this.collection) {
           throw new Error(`Collection not initialized for ${this.name}`);
         }
 
-        const docs = await this.collection.find({ season: season }).toArray()
-        return docs.map(doc => this.mapDoc(doc, this.countryDocMap))
+        const dbField = this.teamDocMap[field];
+        const docs = await this.collection.find({[dbField]: word }).toArray()
+        return docs.map(doc => this.mapDoc(doc, this.teamDocMap))
     }
 
 
@@ -56,11 +57,11 @@ export class Team extends BaseModel {
     ): Promise<Team[]> {
         const regex = new RegExp(word, 'i');
 
-        const dbField = this.countryDocMap[field];
+        const dbField = this.teamDocMap[field];
 
         const docs = await Team.collection.find({[dbField]: regex}).limit(limit).toArray();
 
-        return docs.map(doc => this.mapDoc(doc, this.countryDocMap));
+        return docs.map(doc => this.mapDoc(doc, this.teamDocMap));
     }
 
 
