@@ -24,9 +24,12 @@ export class Game extends BaseModel {
         injestion_info: 'injestion_info',
         date: 'fixture.date',
         league: 'league.name',
+        league_id: 'league.id',
         country: 'league.country',
         home: 'teams.home.name',
+        home_id: 'teams.home.id',
         away: 'teams.away.name',
+        away_id: 'teams.away.id',
         name: (doc: any) => `${doc.teams.home.name} vs ${doc.teams.away.name}`
     };
 
@@ -49,54 +52,70 @@ export class Game extends BaseModel {
 
 
     static async fetchByWord({
-        word, after, field, sort = 'date', direction = 'desc', limit = SMALL_L, from, to
-    }: QueryParams
-    ): Promise<GameData[]> {
+        word, filters = {}, after, field, sort = 'date', direction = 'desc', limit = SMALL_L, from, to
+    }: QueryParams): Promise<GameData[]> {
         const regex = new RegExp(word, 'i');
-
+    
         // build filter for the field
         const dbField = this.gameDocMap[field];
-        let fieldFilter;
-        if (field === 'name') {
-            fieldFilter = {
-                $or: [
-                  { [this.gameDocMap.home as string]: regex },
-                  { [this.gameDocMap.away as string]: regex }
-                ]
-              };
-        } else if (typeof dbField === 'string') {
-            // Now TypeScript knows it's a string here
-            fieldFilter = { [dbField]: regex };
-        } else {
-            // This would only run if someone used a computed field (function),
-            // but since you "handled" those in the `if`, this is just a safeguard.
-            throw new Error(`Field ${field} does not map to a string field`);
+        let fieldFilter: Record<string, any> = {};
+
+        if (word && word.trim() !== '') {
+            const regex = new RegExp(word, 'i');
+            if (field === 'name') {
+                fieldFilter = {
+                    $or: [
+                        { [this.gameDocMap.home as string]: regex },
+                        { [this.gameDocMap.away as string]: regex }
+                    ]
+                };
+            } else if (typeof dbField === 'string') {
+                fieldFilter = { [dbField]: regex };
+            } else {
+                throw new Error(`Field ${field} does not map to a string field`);
+            }
         }
-        
-        // Pagination (optional)
+
+    
+        // Pagination filter
         let paginationFilter: Record<string, any> = {};
         if (after) {
-            paginationFilter = { [this.gameDocMap[sort] as string]: { [direction === 'asc' ? '$gt' : '$lt']: after } }
+            paginationFilter = { [this.gameDocMap[sort] as string]: { [direction === 'asc' ? '$gt' : '$lt']: after } };
         }
-
-        // Date-Range filter 
-        let dateFilter: Record<string, any> = {};
-
-        if (from) {
-            dateFilter.$gte = from;
-        }
-        if (to) {
-            dateFilter.$lte = to;
-        }
-        
-        dateFilter = Object.keys(dateFilter).length > 0
-            ? { date: dateFilter }
-            : {};
     
-        const fullFilter = {
-            $and: [fieldFilter, paginationFilter, dateFilter]
-        };
+        // Date-Range filter
+        let dateFilter: Record<string, any> = {};
+        if (from) dateFilter.$gte = from;
+        if (to) dateFilter.$lte = to;
+        dateFilter = Object.keys(dateFilter).length > 0 ? { date: dateFilter } : {};
+    
+        // Build filters from country, league, team
+        let filtersQuery: Record<string, any> = {};
+        const countryField = this.gameDocMap['country'] as string;
+        const leagueField = this.gameDocMap['league_id'] as string;
+        const homeTeamField = this.gameDocMap['home_id'] as string;
+        const awayTeamField = this.gameDocMap['away_id'] as string;
 
+        if (filters.countryIds?.length) {
+            filtersQuery[countryField] = { $in: filters.countryIds };
+        }
+        if (filters.leagueIds?.length) {
+            filtersQuery[leagueField] = { $in: filters.leagueIds };
+        }
+        if (filters.teamIds?.length) {
+            filtersQuery.$or = [
+                { [homeTeamField]: { $in: filters.teamIds } },
+                { [awayTeamField]: { $in: filters.teamIds } }
+            ];
+        }
+    
+        // Combine all filters
+        const conditions = [fieldFilter, paginationFilter, dateFilter, filtersQuery]
+            .filter(f => Object.keys(f).length > 0);
+
+        const fullFilter = conditions.length > 0 ? { $and: conditions } : {};
+
+    
         const docs = await Game.collection.find(fullFilter)
             .sort({ [this.gameDocMap[sort] as string]: direction === 'asc' ? 1 : -1 })
             .limit(limit)

@@ -1,5 +1,5 @@
-import { SPORT, FREE_YEARS_FOOTBALL, API_SOURCE_NAME, GAMES_COLL_NAME, SCRAPER_MODULE, IS_FREE_PLAN} from '../../config/index.js';
-import { delaySeconds } from '../../utils/index.js';
+import { SPORT, FREE_YEARS_FOOTBALL, API_SOURCE_NAME, GAMES_COLL_NAME, SCRAPER_MODULE, IS_FREE_PLAN, FREE_RPM, IS_PRO_PLAN, PRO_RPM} from '../../config/index.js';
+import { delayForLimit } from '../../utils/index.js';
 import { createLogger, FlagsManager, fetchSportData, migrateDateFields, wrapperWrite, writeUpsert, fetchCollection } from '../../services/index.js';
 import type { IntegerType } from 'mongodb';
 import { Db } from 'mongodb';
@@ -15,9 +15,7 @@ const flagsManager = new FlagsManager()
 async function handleLeague(league: any, db: Db, customYear?: IntegerType) {
   const wrapperUpsert = wrapperWrite(writeUpsert, db, dimention);
 
-  if (IS_FREE_PLAN) {
-    await delaySeconds(6);
-  }
+  await delayForLimit();
 
   const currentSeason = league.seasons?.find((s: any) => s.current);
 

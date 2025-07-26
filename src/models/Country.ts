@@ -44,13 +44,53 @@ export class Country extends BaseModel {
 
 
     static async fetchByWord(
-        {word, field = 'name', limit=SMALL_L}: QueryParams & { field?: keyof CountryData }
-    ): Promise<Country[]> {
+        {word, filters = {}, field = 'name', limit=SMALL_L}: QueryParams & { field?: keyof CountryData }
+    ): Promise<CountryData[]> {
+
+        // Lazy import to avoid circular reference. for team and league filters
+        const { League } = await import('./League.js');
+        const { Team } = await import('./Team.js');
+
         const regex = new RegExp(word, 'i');
 
         const dbField = this.countryDocMap[field];
+        const fieldFilter = { [dbField]: regex };
 
-        const docs = await Country.collection.find({[dbField]: regex}).limit(limit).toArray();
+        const countrySet = new Set<string>();
+
+        // Add countries from countryIds (if provided), leagueIds and teamIds
+        if (filters.countryIds?.length) {
+            filters.countryIds.forEach(name => countrySet.add(name));
+        }
+        if (filters.leagueIds?.length) {
+            const countryIdsFromLeagues = await League.collection.distinct(
+                'country.name', 
+                { 'league.id': { $in: filters.leagueIds } }
+            );
+            countryIdsFromLeagues.forEach(name => countrySet.add(name));
+        }
+        if (filters.teamIds?.length) {
+            const countryIdsFromTeams = await Team.collection.distinct(
+                'team.country', 
+                { 'team.id': { $in: filters.teamIds } }
+            );
+            countryIdsFromTeams.forEach(name => countrySet.add(name));
+        }
+
+        const allCountryIds = Array.from(countrySet);
+
+        // Build the filter if we have countries
+        let countryIdsFilter: Record<string, any> = {};
+        if (allCountryIds.length) {
+            countryIdsFilter[this.countryDocMap['name']] = { $in: allCountryIds };
+        }
+
+        const conditions = [fieldFilter, countryIdsFilter]
+            .filter(f => Object.keys(f).length > 0);
+
+        const fullFilter = conditions.length > 0 ? { $and: conditions } : {};
+
+        const docs = await Country.collection.find(fullFilter).limit(limit).toArray();
 
         return docs.map(doc => this.mapDoc(doc, this.countryDocMap));
     }

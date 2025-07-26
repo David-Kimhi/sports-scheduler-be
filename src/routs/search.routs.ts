@@ -1,7 +1,7 @@
 import express, { type Request, type Response } from 'express';
 import { z } from 'zod';
 import { createLogger } from '../services/index.js';
-import { Game, Country, League } from '../models/index.js';
+import { Game, Country, League, Team } from '../models/index.js';
 import { SPORT, SMALL_L, LARGE_L } from '../config/index.js';
 
 
@@ -9,14 +9,17 @@ const router = express.Router();
 
 const logger = createLogger('API', SPORT)
 
-const COLLECTIONS = [Game, Country, League];
+const COLLECTIONS = [Game, Country, League, Team];
 
-// Zod schema for query params
 const querySchema = z.object({
-  word: z.string().min(1, 'Query must be a non-empty string'),
+  word: z.string().optional().default(''),
   field: z.string().optional().default('name'),
-  limit: z.coerce.number().min(1).max(LARGE_L).optional().default(SMALL_L)
+  limit: z.coerce.number().min(1).max(LARGE_L).optional().default(SMALL_L),
+  country: z.union([z.string(), z.array(z.string())]).optional(),
+  league: z.union([z.coerce.number(), z.array(z.coerce.number())]).optional(),
+  team: z.union([z.coerce.number(), z.array(z.coerce.number())]).optional()
 });
+
 
 router.get('/', async (req: Request, res: Response) => {
     const parseResult = querySchema.safeParse(req.query);
@@ -26,12 +29,41 @@ router.get('/', async (req: Request, res: Response) => {
         return;
     }
 
-    const { word, field, limit } = parseResult.data;
+    const { word, field, limit, country, league, team } = parseResult.data;
     try {
 
     const searchResults = await Promise.all(
         COLLECTIONS.map(async (model) => {
-            const results = await model.fetchByWord({word, field, limit})
+            const filters: any = {};
+
+            filters.countryIds = country
+              ? (Array.isArray(country) ? country : [country])
+              : [];
+
+            // Fetch country names for these codes (if any)
+            let countryNames: string[] = [];
+            if (filters.countryIds.length > 0) {
+              for (const code of filters.countryIds){
+                const country = await Country.fetchByWord({
+                  word: code,               
+                  filters: {}, 
+                  field: 'code'
+                });
+
+                countryNames.push(country[0].name);
+              }
+            }
+
+            // Replace codes with country names
+            filters.countryIds = countryNames;
+            filters.leagueIds = league
+              ? (Array.isArray(league) ? league : [league])
+              : [];
+            filters.teamIds = team
+              ? (Array.isArray(team) ? team : [team])
+              : [];
+
+            const results = await model.fetchByWord({word, field, limit, filters});
             return { [model.collection.collectionName]: results };
         })
     );

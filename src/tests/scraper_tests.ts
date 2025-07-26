@@ -1,5 +1,9 @@
-import { SPORT } from '../config/constants.js'
-import { IS_FREE_PLAN, SCRAPER_MODULE } from '../config/sportsapi.js'
-import { fetchAndStoreTeams } from '../scrapers/football/fetchTeams.js'
-import { getMongoDb } from '../services/mongodb_conn.service.js'
+import { populateLeagueTeams } from "../scripts/populateLeagues.js";
+import { closeMongoDb, getMongoDb } from "../services/index.js";
+import { SPORT, SCRAPER_MODULE } from "../config/index.js";
+
+
+const db = await getMongoDb(SPORT, SCRAPER_MODULE);
+await populateLeagueTeams(db);
+await closeMongoDb(SPORT, SCRAPER_MODULE);
 

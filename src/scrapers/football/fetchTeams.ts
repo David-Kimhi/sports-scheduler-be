@@ -6,8 +6,8 @@ import {
   , createLogger
   , FlagsManager 
 } from '../../services/index.js';
-import { SPORT, FREE_YEARS_FOOTBALL, API_SOURCE_NAME, SCRAPER_MODULE, IS_FREE_PLAN} from '../../config/index.js';
-import { delaySeconds } from '../../utils/index.js';
+import { SPORT, FREE_YEARS_FOOTBALL, API_SOURCE_NAME, SCRAPER_MODULE, IS_FREE_PLAN, IS_PRO_PLAN, FREE_RPM, PRO_RPM} from '../../config/index.js';
+import { delayForLimit } from '../../utils/index.js';
 import type { IntegerType } from 'mongodb';
 import { Db } from 'mongodb';
 
@@ -21,9 +21,7 @@ const flagsManager = new FlagsManager()
 async function handleLeague(league: any, db: Db, customYear?: IntegerType) {
   const wrapperUpsert = wrapperWrite(writeUpsert, db, dimention);
 
-  if (IS_FREE_PLAN) {
-    await delaySeconds(6);
-  }
+  await delayForLimit();
 
   const currentSeason = league.seasons?.find((s: any) => s.current);
 
@@ -45,19 +43,18 @@ async function handleLeague(league: any, db: Db, customYear?: IntegerType) {
   } catch (err: any) {
     logger.error(`Error while fetching teams for League ID ${league.league.id} | League Name ${league.league.name}`);
   } finally {
-    logger.info(`League ID ${league.league.id} | League Name ${league.league.name} | Season ${seasonToFetch} | Fetched ${teams.length} games.`);
+    logger.info(`League ID ${league.league.id} | League Name ${league.league.name} | Season ${seasonToFetch} | Fetched ${teams.length} teams.`);
   }
 
   if (teams.length) {
     // add season and leage to each team
     const enrichedTeams = teams.map((item) => ({
-        ...item,
         team: {
             ...item.team,
             season: seasonToFetch,
             league: league.league.id,      
         },
-        ...item.venue
+        venue: {...item.venue}
       }));
     
     await wrapperUpsert(enrichedTeams, 'team.id,team.season,team.league', API_SOURCE_NAME);

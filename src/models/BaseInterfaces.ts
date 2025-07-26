@@ -11,6 +11,11 @@ export interface BaseDocument {
 export interface QueryParams {
   word: string;
   field: string;
+  filters?: {
+    countryIds?: string[];
+    leagueIds?: string[];
+    teamIds?: string[];
+  };
   after?: Date;
   from?: Date;
   to?: Date;

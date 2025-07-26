@@ -1,11 +1,11 @@
 import * as s from './src/scrapers/football/index.js';
 import { FlagsManager, getMongoDb, closeMongoDb} from './src/services/index.js';
-import { SPORT } from './src/config/index.js';
+import { SCRAPER_MODULE, SPORT } from './src/config/index.js';
 
 
 const flagsManager = new FlagsManager()
 
-const db = await getMongoDb(SPORT, 'scraper');
+const db = await getMongoDb(SPORT, SCRAPER_MODULE);
 
 flagsManager.resetIfAllTrue();
 

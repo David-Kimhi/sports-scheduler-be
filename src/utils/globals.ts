@@ -1,9 +1,18 @@
 
 import axios from "axios";
+import { FREE_RPM, IS_FREE_PLAN, IS_PRO_PLAN, PRO_RPM } from "../config/index.js";
 
 
 
-export function delaySeconds(sec: number): Promise<void> {
+export function delayForLimit(rpm: number = FREE_RPM): Promise<void> {
+    if (IS_FREE_PLAN) {
+      rpm = FREE_RPM;
+    }
+    if (IS_PRO_PLAN) {
+      rpm = PRO_RPM
+    }
+
+    const sec = 60/rpm;
     return new Promise(resolve => setTimeout(resolve, sec * 1000));
 }
 

@@ -24,6 +24,7 @@ export class Team extends BaseModel {
         id: 'team.id',
         name: 'team.name',
         injestion_info: 'injestion_info',
+        country: 'team.country',
         code: 'team.code',
         logo: 'team.logo',
         season: 'team.season',
@@ -53,16 +54,42 @@ export class Team extends BaseModel {
 
 
     static async fetchByWord(
-        {word, field = 'name', limit=SMALL_L}: QueryParams & { field?: keyof TeamData }
-    ): Promise<Team[]> {
+        {word, filters = {}, field = 'name', limit=SMALL_L}: QueryParams & { field?: keyof TeamData }
+    ): Promise<TeamData[]> {
         const regex = new RegExp(word, 'i');
 
         const dbField = this.teamDocMap[field];
+        const fieldFilter = { [dbField]: regex };
 
-        const docs = await Team.collection.find({[dbField]: regex}).limit(limit).toArray();
+        let filtersQuery: Record<string, any> = {};
+        if (filters.teamIds?.length) {
+            filtersQuery[this.teamDocMap['id']] = { $in: filters.teamIds };
+        }
+        if (filters.leagueIds?.length) {
+            filtersQuery[this.teamDocMap['league']] = { $in: filters.leagueIds };
+        }
+        if (filters.countryIds?.length) {
+            filtersQuery[this.teamDocMap['country']] = { $in: filters.countryIds };
+        }
 
-        return docs.map(doc => this.mapDoc(doc, this.teamDocMap));
+        const conditions = [fieldFilter, filtersQuery]
+            .filter(f => Object.keys(f).length > 0);
+
+        const fullFilter = conditions.length > 0 ? { $and: conditions } : {};
+
+
+        const docs = await Team.collection.find(fullFilter).limit(limit).toArray();
+
+        const teams = docs.map(doc => this.mapDoc<TeamData>(doc, this.teamDocMap));
+
+        // Deduplicate by `id` (for now, fetch all team existed, from all seasons)
+        const seen = new Set<number>();
+        const uniqueTeams = teams.filter(team => {
+            if (seen.has(team.id)) return false;
+            seen.add(team.id);
+            return true;
+        });
+
+        return uniqueTeams;
     }
-
-
 }

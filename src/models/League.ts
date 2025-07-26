@@ -25,6 +25,7 @@ export class League extends BaseModel {
         country: 'country.name',
         type: 'league.type',
         logo: 'league.logo',
+        teams: 'seasons.teams'
     };
     
     // Default game object (e.g., for creating new records)
@@ -48,13 +49,32 @@ export class League extends BaseModel {
     }
 
     static async fetchByWord(
-        {word, field = 'name', limit = SMALL_L}: QueryParams & { field?: keyof LeagueData }
+        {word, filters = {}, field = 'name', limit = SMALL_L}: QueryParams & { field?: keyof LeagueData }
     ): Promise<LeagueData[]> {
         const regex = new RegExp(word, 'i');
 
         const dbField = this.leagueDocMap[field];
+        const fieldFilter = { [dbField]: regex };
 
-        const docs = await League.collection.find({[dbField]: regex}).limit(limit).toArray();
+        let filtersQuery: Record<string, any> = {};
+        if (filters.leagueIds?.length) {
+            filtersQuery[this.leagueDocMap['id']] = { $in: filters.leagueIds };
+        }
+        if (filters.countryIds?.length) {
+            filtersQuery[this.leagueDocMap['country']] = { $in: filters.countryIds };
+        }
+        if (filters.teamIds?.length) {
+            filtersQuery[`${this.leagueDocMap['teams']}.id`] = { $in: filters.teamIds }
+        }
+
+
+        const conditions = [fieldFilter, filtersQuery]
+            .filter(f => Object.keys(f).length > 0);
+
+            const fullFilter = conditions.length > 0 ? { $and: conditions } : {};
+
+
+        const docs = await League.collection.find(fullFilter).limit(limit).toArray();
 
         return docs.map(doc => this.mapDoc(doc, this.leagueDocMap));
     }
