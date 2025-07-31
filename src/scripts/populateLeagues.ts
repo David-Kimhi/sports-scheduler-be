@@ -1,5 +1,8 @@
 import { Db } from 'mongodb';
-import { LEAGUES_COLL_NAME, TEAMS_COLL_NAME } from '../config/index.js';
+import { LEAGUES_COLL_NAME, SCRAPER_MODULE, SPORT, TEAMS_COLL_NAME } from '../config/index.js';
+import { createLogger } from '../services/logger.service.js';
+
+const logger = createLogger(SCRAPER_MODULE, SPORT)
 
 /**
  * Updates the leagues collection to embed teams for each season.
@@ -14,19 +17,16 @@ export async function populateLeagueTeams(db: Db) {
   const leaguesCol = db.collection(LEAGUES_COLL_NAME);
   const teamsCol = db.collection(TEAMS_COLL_NAME);
 
-  let count = 0;
+  logger.info("Populating teams started")
+
   const leaguesCursor = leaguesCol.find({});
   while (await leaguesCursor.hasNext()) {
-    
-    count += 1;
-    console.log(count);
+
     const league = await leaguesCursor.next();
     if (!league || !league.seasons) continue;
 
     const updatedSeasons = [];
     for (const season of league.seasons) {
-
-        const leagueId = league.league.id;
 
         // Fetch all teams for this league and season
         const teams = await teamsCol
@@ -53,5 +53,5 @@ export async function populateLeagueTeams(db: Db) {
     );
   }
 
-  console.log('✅ Populated leagues with teams per season');
+  logger.info('✅ Populated leagues with teams per season');
 }

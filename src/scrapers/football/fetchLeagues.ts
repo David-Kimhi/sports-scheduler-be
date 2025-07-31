@@ -1,7 +1,10 @@
-import { wrapperWrite, writeUpsert, fetchSportData } from '../../services/index.js'
-import { API_SOURCE_NAME, SPORT } from '../../config/index.js'
+import { wrapperWrite, writeUpsert, fetchSportData, createLogger } from '../../services/index.js'
+import { API_SOURCE_NAME, SCRAPER_MODULE, SPORT } from '../../config/index.js'
 import { Db } from 'mongodb'
-import { populateLeagueTeams } from '../../scripts/populateLeagues.js'
+
+
+// create a logger
+const logger = createLogger(SCRAPER_MODULE, SPORT);
 
 const dimention = 'leagues'
 
@@ -11,8 +14,19 @@ async function fetchAndStoreLeauges(db: Db) {
     const leagues = await fetchSportData(SPORT, dimention)
 
     await wrapperUpsert(leagues, 'league.id', API_SOURCE_NAME);
-    await populateLeagueTeams(db);
 
 }
 
-export { fetchAndStoreLeauges }
+async function fetchCurrentSeason(league: any): Promise<number> {
+    const currentSeason = await league.seasons?.find((s: any) => s.current);
+  
+    if (!currentSeason) {
+      logger.error(`No current season found for league ${league.name}`);
+      return -1;
+    } else {
+      return currentSeason.year
+    }
+  
+  }
+
+export { fetchAndStoreLeauges, fetchCurrentSeason }

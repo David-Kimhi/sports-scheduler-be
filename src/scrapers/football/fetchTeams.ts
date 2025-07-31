@@ -10,6 +10,7 @@ import { SPORT, FREE_YEARS_FOOTBALL, API_SOURCE_NAME, SCRAPER_MODULE, IS_FREE_PL
 import { delayForLimit } from '../../utils/index.js';
 import type { IntegerType } from 'mongodb';
 import { Db } from 'mongodb';
+import { fetchCurrentSeason } from './fetchLeagues.js';
 
 // create a logger
 const logger = createLogger(SCRAPER_MODULE, SPORT);
@@ -18,22 +19,14 @@ const dimention = 'teams'
 const flagsManager = new FlagsManager()
 
 
-async function handleLeague(league: any, db: Db, customYear?: IntegerType) {
+async function handleLeague(league: any, db: Db, year: number) {
   const wrapperUpsert = wrapperWrite(writeUpsert, db, dimention);
 
   await delayForLimit();
 
-  const currentSeason = league.seasons?.find((s: any) => s.current);
-
-  if (!currentSeason && IS_FREE_PLAN) {
-    logger.error(`No current season found for league ${league.name}`);
-    return;
-  }
-
-  const seasonToFetch = IS_FREE_PLAN ? customYear : currentSeason.year;
   const params = {
     league: league.league.id,
-    season: seasonToFetch,
+    season: year,
   };
 
   let teams: any[] = [];
@@ -43,7 +36,7 @@ async function handleLeague(league: any, db: Db, customYear?: IntegerType) {
   } catch (err: any) {
     logger.error(`Error while fetching teams for League ID ${league.league.id} | League Name ${league.league.name}`);
   } finally {
-    logger.info(`League ID ${league.league.id} | League Name ${league.league.name} | Season ${seasonToFetch} | Fetched ${teams.length} teams.`);
+    logger.info(`League ID ${league.league.id} | League Name ${league.league.name} | Season ${year} | Fetched ${teams.length} teams.`);
   }
 
   if (teams.length) {
@@ -51,7 +44,7 @@ async function handleLeague(league: any, db: Db, customYear?: IntegerType) {
     const enrichedTeams = teams.map((item) => ({
         team: {
             ...item.team,
-            season: seasonToFetch,
+            season: year,
             league: league.league.id,      
         },
         venue: {...item.venue}
@@ -72,20 +65,15 @@ export async function fetchAndStoreTeams(db: Db) {
 
   for (const league of leagues) {
 
-    if (IS_FREE_PLAN) {
-      for (const year of FREE_YEARS_FOOTBALL) {
-        await flagsManager.runOnce(
-          `fetchTeamsLeague_${league.league.id}_${year}`,
-          () => handleLeague(league, db, year)
-        )
-      }
+    const yearsToFetch = IS_FREE_PLAN ? FREE_YEARS_FOOTBALL : [await fetchCurrentSeason(league)]
 
-    } else {
+    for (const year of yearsToFetch) {
       await flagsManager.runOnce(
-        `fetchTeamsLeague_${league.league.id}`,
-        () => handleLeague(league, db)
+        `fetchTeamsLeague_${league.league.id}_${year}`,
+        () => handleLeague(league, db, year)
       )
-    } // end if-else
+    }
+    
   } // end of for (leagues)
 
 }

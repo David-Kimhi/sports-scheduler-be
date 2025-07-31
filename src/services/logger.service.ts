@@ -1,4 +1,4 @@
-import winston from 'winston';
+import winston, { Logger } from 'winston';
 import path from 'path';
 import fs from 'fs';
 import { BASE_PATH, YYYY_MM_DD} from '../config/index.js';
@@ -6,7 +6,7 @@ import { BASE_PATH, YYYY_MM_DD} from '../config/index.js';
 /**
  * Creates a winston logger with the given name.
  */
-export function createLogger(module: string, sport: string) {
+export function createLogger(module: string, sport: string): Logger {
     // Define log directory and log file path
     const logDir = path.resolve(BASE_PATH, './logs');
     const loggerName = `${YYYY_MM_DD}_${module}_${sport}`
@@ -19,8 +19,8 @@ export function createLogger(module: string, sport: string) {
     const logFilePath = path.join(logDir, `${loggerName}.log`);
 
     const logger = winston.createLogger({
-        level: 'info',
-        format: winston.format.combine(
+        level: process.env.LOG_LEVEL || 'info',
+            format: winston.format.combine(
             winston.format.label({ label: loggerName }),
             winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
             winston.format.printf(({ timestamp, level, message, label }) => {

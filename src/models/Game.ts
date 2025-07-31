@@ -30,6 +30,7 @@ export class Game extends BaseModel {
         home_id: 'teams.home.id',
         away: 'teams.away.name',
         away_id: 'teams.away.id',
+        round: 'league.round',
         name: (doc: any) => `${doc.teams.home.name} vs ${doc.teams.away.name}`
     };
 
@@ -52,9 +53,20 @@ export class Game extends BaseModel {
 
 
     static async fetchByWord({
-        word, filters = {}, after, field, sort = 'date', direction = 'desc', limit = SMALL_L, from, to
-    }: QueryParams): Promise<GameData[]> {
-        const regex = new RegExp(word, 'i');
+        word,
+        filters = {},
+        after,
+        field,
+        sort = 'date',
+        direction = 'asc',
+        limit = SMALL_L,
+        from,
+        to
+      }: QueryParams): Promise<GameData[]> {
+        // Default `from` to the current moment if not provided
+        if (!from) {
+          from = new Date();
+        }
     
         // build filter for the field
         const dbField = this.gameDocMap[field];
@@ -87,7 +99,7 @@ export class Game extends BaseModel {
         let dateFilter: Record<string, any> = {};
         if (from) dateFilter.$gte = from;
         if (to) dateFilter.$lte = to;
-        dateFilter = Object.keys(dateFilter).length > 0 ? { date: dateFilter } : {};
+        dateFilter = Object.keys(dateFilter).length > 0 ? { [this.gameDocMap['date'] as string]: dateFilter } : {};
     
         // Build filters from country, league, team
         let filtersQuery: Record<string, any> = {};

@@ -52,6 +52,39 @@ export class Team extends BaseModel {
         return docs.map(doc => this.mapDoc(doc, this.teamDocMap))
     }
 
+    public static async fetchLogos() {
+        if (!this.collection) {
+          throw new Error(`Collection not initialized for ${this.name}`);
+        }
+      
+        const pipeline = [
+          {
+            $sort: {
+              'team.id': 1,
+              'injestion_info.fetched_at': -1 // Assuming it's ISO date string
+            }
+          },
+          {
+            $group: {
+              _id: '$team.id',
+              logo: { $first: '$team.logo' }
+            }
+          },
+          {
+            $project: {
+              _id: 0,
+              id: '$_id',
+              logo: 1
+            }
+          }
+        ];
+      
+        const docs = await this.collection.aggregate(pipeline).toArray();
+        return docs;
+    }
+      
+      
+
 
     static async fetchByWord(
         {word, filters = {}, field = 'name', limit=SMALL_L}: QueryParams & { field?: keyof TeamData }
