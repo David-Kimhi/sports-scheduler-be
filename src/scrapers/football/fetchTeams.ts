@@ -6,11 +6,12 @@ import {
   , createLogger
   , FlagsManager 
 } from '../../services/index.js';
-import { SPORT, FREE_YEARS_FOOTBALL, API_SOURCE_NAME, SCRAPER_MODULE, IS_FREE_PLAN, IS_PRO_PLAN, FREE_RPM, PRO_RPM} from '../../config/index.js';
+import { SPORT, FREE_YEARS_FOOTBALL, API_SOURCE_NAME, SCRAPER_MODULE, IS_FREE_PLAN, IS_PRO_PLAN, FREE_RPM, PRO_RPM, TEAMS_COLL_NAME} from '../../config/index.js';
 import { delayForLimit } from '../../utils/index.js';
 import type { IntegerType } from 'mongodb';
 import { Db } from 'mongodb';
 import { fetchCurrentSeason } from './fetchLeagues.js';
+import { Team } from '../../models/Team.js';
 
 // create a logger
 const logger = createLogger(SCRAPER_MODULE, SPORT);
@@ -76,4 +77,34 @@ export async function fetchAndStoreTeams(db: Db) {
     
   } // end of for (leagues)
 
+}
+
+export async function cleanTeams() {
+  await Team.init(SPORT, TEAMS_COLL_NAME, SCRAPER_MODULE);
+
+  const { id, league, season } = Team.teamDocMap;
+
+
+  const pipeline = [
+    {
+      $sort: { [season]: -1 }  // sort by most recent season
+    },
+    {
+      $group: {
+        _id: {
+          id: `$${id}`,
+          league: `$${league}`
+        },
+        keepId: { $first: '$_id' }
+      }
+    }
+  ];
+  
+  const result = await Team.collection.aggregate(pipeline).toArray();
+  const idsToKeep = result.map(doc => doc.keepId);
+
+  await Team.collection.deleteMany({
+    _id: { $nin: idsToKeep }
+  })
+  
 }
