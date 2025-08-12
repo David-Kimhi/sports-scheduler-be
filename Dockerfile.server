@@ -1,24 +1,31 @@
-# Base image with Node.js
-FROM node:20
+# ---- backend Dockerfile (single-stage) ----
+FROM node:20-alpine
 
-# Install rsync
-RUN apt update && apt install -y rsync
+# If you actually need rsync on the backend, install it like this (apk, not apt)
+# Most backends don't need rsync, so you can remove this line if not used.
+RUN apk add --no-cache rsync
 
-# Set working directory
 WORKDIR /app
 
-# Copy package files and install dependencies
+# Install dependencies based on lockfile
 COPY package*.json ./
-RUN npm install
+# Use npm ci for reproducibility; we need dev deps to compile TypeScript
+RUN npm ci
 
-# Copy the rest of the project files
+# Copy source and build
 COPY . .
-
-# Build TypeScript files
 RUN npm run build
 
-RUN npm install dotenv
+# At runtime we only need production deps; prune dev to slim the image
+RUN npm ci --omit=dev
 
+# Make sure dotenv is declared in package.json "dependencies" (not installed ad-hoc)
+# Remove the "RUN npm install dotenv" line from your original Dockerfile.
+
+ENV NODE_ENV=production
+ENV PORT=3000
 EXPOSE 3000
 
+# Ensure your server listens on 0.0.0.0
 CMD ["npm", "run", "start:server"]
+    

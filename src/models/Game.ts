@@ -31,6 +31,8 @@ export class Game extends BaseModel {
         away: 'teams.away.name',
         away_id: 'teams.away.id',
         round: 'league.round',
+        venueName: 'fixture.venue.name',
+        venueCity: 'fixture.venue.city',
         name: (doc: any) => `${doc.teams.home.name} vs ${doc.teams.away.name}`
     };
 
