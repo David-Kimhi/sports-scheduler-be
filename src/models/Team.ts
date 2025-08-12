@@ -52,36 +52,27 @@ export class Team extends BaseModel {
         return docs.map(doc => this.mapDoc(doc, this.teamDocMap))
     }
 
-    public static async fetchLogos() {
-        if (!this.collection) {
-          throw new Error(`Collection not initialized for ${this.name}`);
-        }
-      
-        const pipeline = [
-          {
-            $sort: {
-              'team.id': 1,
-              'injestion_info.fetched_at': -1 // Assuming it's ISO date string
-            }
-          },
-          {
-            $group: {
-              _id: '$team.id',
-              logo: { $first: '$team.logo' }
-            }
-          },
-          {
-            $project: {
-              _id: 0,
-              id: '$_id',
-              logo: 1
-            }
-          }
-        ];
-      
-        const docs = await this.collection.aggregate(pipeline).toArray();
-        return docs;
+    public static async fetchLogos(): Promise<Array<Pick<TeamData, 'id' | 'logo'>>> {
+      if (!this.collection) {
+        throw new Error(`Collection not initialized for ${this.name}`);
+      }
+    
+      const idPath = this.teamDocMap.id;           // 'team.id'
+      const seasonPath = this.teamDocMap.season;   // 'team.season'
+      const logoPath = this.teamDocMap.logo;       // 'team.logo'
+      const fetchedAtPath = this.teamDocMap.injestion_info + '.fetched_at'; // 'injestion_info.fetched_at'
+    
+      const pipeline = [
+        { $match: { [logoPath]: { $type: 'string', $ne: '' } } },
+        // Ensure latest season wins; within that season, latest fetched_at wins
+        { $sort: { [idPath]: 1, [seasonPath]: -1, [fetchedAtPath]: -1, _id: -1 } },
+        { $group: { _id: `$${idPath}`, doc: { $first: '$$ROOT' } } },
+        { $project: { _id: 0, id: `$doc.${idPath}`, logo: `$doc.${logoPath}` } },
+      ];
+    
+      return this.collection.aggregate<Pick<TeamData, 'id' | 'logo'>>(pipeline as any).toArray();
     }
+    
       
       
 

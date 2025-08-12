@@ -38,6 +38,36 @@ export class League extends BaseModel {
         };
     }
 
+    static async fetchLogos(): Promise<Array<Pick<LeagueData, 'id' | 'logo'>>> {
+        if (!this.collection) {
+          throw new Error(`Collection not initialized for ${this.name}`);
+        }
+      
+        const idPath = this.leagueDocMap.id;     // 'league.id'
+        const logoPath = this.leagueDocMap.logo; // 'league.logo'
+        const injestionPath = this.leagueDocMap.injestion_info + '.fetched_at'; // 'injestion_info.ts'
+      
+        const pipeline = [
+          { $match: { [logoPath]: { $exists: true, $ne: '' } } },
+          { $sort: { [injestionPath]: -1 } }, // newest first
+          {
+            $group: {
+              _id: `$${idPath}`,
+              doc: { $first: '$$ROOT' },
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              id: `$doc.${idPath}`,
+              logo: `$doc.${logoPath}`,
+            },
+          },
+        ];
+      
+        return this.collection.aggregate<Pick<LeagueData, 'id' | 'logo'>>(pipeline).toArray();
+      }
+      
 
     static async fetchAll() {
         if (!this.collection) {
