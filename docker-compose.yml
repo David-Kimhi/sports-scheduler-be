@@ -15,6 +15,8 @@ services:
       context: ../sports-scheduler-web
       dockerfile: Dockerfile  
       args:
+        BACKEND_BASE: "https://sport-scheduler.com/api"
+        FOOTBALL_ENDPOINT: "/football"
         SKIP_ASSET_DOWNLOAD: "1"
     environment:
       - DOMAIN=sport-scheduler.com          # used in Caddyfile {$DOMAIN}
@@ -29,6 +31,18 @@ services:
       - api
     restart: unless-stopped
 
+  web-jobs:
+    image: node:20-alpine
+    working_dir: /web
+    volumes:
+      - ../sports-scheduler-web:/web
+    environment:
+      - BACKEND_BASE=https://sport-scheduler.com/api
+      - FOOTBALL_ENDPOINT=/football
+
+
 volumes:
-  caddy_data:
-  caddy_config:
+  - caddy_data: /data
+  - caddy_config: /config
+  - ../sports-scheduler-web/src/assets/logos:/usr/share/caddy/assets/logos:ro
+
