@@ -1,9 +1,8 @@
-# docker-compose.yml
 services:
   api:
     build:
-      context: .  
-      dockerfile: Dockerfile.server 
+      context: .
+      dockerfile: Dockerfile.server
     env_file:
       - ./.env
     expose:
@@ -13,20 +12,22 @@ services:
   web:
     build:
       context: ../sports-scheduler-web
-      dockerfile: Dockerfile  
+      dockerfile: Dockerfile
       args:
         BACKEND_BASE: "https://sport-scheduler.com/api"
         FOOTBALL_ENDPOINT: "/football"
-        SKIP_ASSET_DOWNLOAD: "1"
+        # SKIP_ASSET_DOWNLOAD is passed only during first deploy via CLI
     environment:
-      - DOMAIN=sport-scheduler.com          # used in Caddyfile {$DOMAIN}
-      - VITE_API_BASE=/api            
+      DOMAIN: sport-scheduler.com
+      VITE_API_BASE: /api
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - caddy_data:/data               # persist TLS certs
+      - caddy_data:/data
       - caddy_config:/config
+      # If you ever choose runtime logos, add the bind **here**, not top-level:
+      # - ../sports-scheduler-web/public/assets/logos:/usr/share/caddy/assets/logos:ro
     depends_on:
       - api
     restart: unless-stopped
@@ -37,12 +38,9 @@ services:
     volumes:
       - ../sports-scheduler-web:/web
     environment:
-      - BACKEND_BASE=https://sport-scheduler.com/api
-      - FOOTBALL_ENDPOINT=/football
-
+      BACKEND_BASE: https://sport-scheduler.com/api
+      FOOTBALL_ENDPOINT: /football
 
 volumes:
-  - caddy_data: /data
-  - caddy_config: /config
-  - ../sports-scheduler-web/src/assets/logos:/usr/share/caddy/assets/logos:ro
-
+  caddy_data: {}
+  caddy_config: {}
