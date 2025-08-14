@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { type Request, type Response }from 'express';
 import footballApi from './src/routs/api.js';
 import { API_MODULE, LOCAL_PORT_BACKEND, LOCAL_PORT_FRONTEND, TEAMS_COLL_NAME } from './src/config/index.js';
 import { Game, Country, League, Team } from './src/models/index.js';
@@ -18,6 +18,9 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use('/api/football', footballApi);
+
+app.get('/health', (_req: Request, res: Response) => {res.status(200).send('ok')});
+
 
 app.listen(LOCAL_PORT_BACKEND, () => {
   console.log(`🚀 Server running on port ${LOCAL_PORT_BACKEND}`);
