@@ -18,7 +18,7 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use('/api/football', footballApi);
-
+ 
 app.get(['/health','/api/health'], (_req: Request, res: Response) => {res.status(200).send('ok')});
 
 

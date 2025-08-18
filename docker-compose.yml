@@ -40,6 +40,8 @@ services:
     environment:
       BACKEND_BASE: https://sport-scheduler.com/api
       FOOTBALL_ENDPOINT: /football
+      VITE_API_BASE: https://sport-scheduler.com/api
+      VITE_FOOTBALL_ENDPOINT: /football
 
 volumes:
   caddy_data: {}
