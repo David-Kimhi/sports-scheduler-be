@@ -4,6 +4,8 @@ import { API_MODULE, LOCAL_PORT_BACKEND, LOCAL_PORT_FRONTEND, SCRAPER_MODULE, TE
 import { Game, Country, League, Team } from '../models/index.js';
 import { SPORT, GAMES_COLL_NAME, COUNTRIES_COLL_NAME, LEAGUES_COLL_NAME } from '../config/index.js';
 import cors from 'cors';
+import { Db } from 'mongodb';
+import { popCol } from '../models/SearchPopularity.js';
 
 await Game.init(SPORT, GAMES_COLL_NAME, API_MODULE);
 await Country.init(SPORT, COUNTRIES_COLL_NAME, API_MODULE);
@@ -61,3 +63,7 @@ await cleanupDuplicatesAndIndex().catch(console.error);
 
 await closeMongoDb(SPORT, SCRAPER_MODULE)
 
+  // one-time index
+  export async function ensureIndexes(db: Db) {
+    await popCol(db).createIndex({ _id: 1 }, { unique: true });
+  }

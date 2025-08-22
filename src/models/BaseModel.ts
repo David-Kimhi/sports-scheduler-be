@@ -1,6 +1,6 @@
 import { Collection, ObjectId, type Document } from "mongodb";
 import { getMongoDb } from "../services/mongodb_conn.service.js";
-import type { BaseDocument } from "./BaseInterfaces.js";
+import type { BaseDocument } from "../interfaces.ts/models.interface.js";
 import { API_MODULE } from "../config/api.js";
 
 export class BaseModel {

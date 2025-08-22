@@ -1,5 +1,5 @@
 import { Collection, type Document } from 'mongodb';
-import type { BaseDocument, QueryParams } from './BaseInterfaces.js';
+import type { BaseDocument, QueryParams } from '../interfaces.ts/models.interface.js';
 import { BaseModel } from './BaseModel.js';
 import { API_MODULE, SMALL_L } from '../config/api.js';
 
