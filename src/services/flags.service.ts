@@ -29,9 +29,9 @@ export class FlagsManager {
     this.save(flags);
   }
 
-  resetIfAllTrue() {
+  resetIfAllTrue(resetAlways: boolean = false) {
     const flags = this.load();
-    if (Object.values(flags).every(v => v === true)) {
+    if (Object.values(flags).every(v => v === true) || resetAlways) {
       Object.keys(flags).forEach(k => flags[k] = false);
       this.save(flags);
     }

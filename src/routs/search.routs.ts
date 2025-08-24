@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { createLogger, getMongoDb } from '../services/index.js';
 import { Game, Country, League, Team, type GameData, type TeamData, type LeagueData, type CountryData } from '../models/index.js';
 import { SPORT, SMALL_L, LARGE_L, API_MODULE, COUNTRIES_COLL_NAME, GAMES_COLL_NAME, TEAMS_COLL_NAME, LEAGUES_COLL_NAME } from '../config/index.js';
-import { fetchPopularityMap, incrementPopularity } from '../models/SearchPopularity.js'; 
+import { incrementPopularity } from '../models/SearchPopularity.js'; 
 import { sortByPopularityInMemory } from '../scripts/sortByPopularity.js';
 
 

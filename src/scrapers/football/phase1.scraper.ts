@@ -1,6 +1,6 @@
 import * as s from './index.js';
 import { FlagsManager, getMongoDb} from '../../services/index.js';
-import { SCRAPER_MODULE, SPORT } from '../../config/index.js';
+import { IS_PRO_PLAN, SCRAPER_MODULE, SPORT } from '../../config/index.js';
 import type { Db } from 'mongodb';
 
 
@@ -8,7 +8,9 @@ const flagsManager = new FlagsManager()
 
 async function runPhase(db: Db){
 
-    flagsManager.resetIfAllTrue();
+    // if is pro plan reset all flags on each run
+    const resetAlways = IS_PRO_PLAN
+    flagsManager.resetIfAllTrue(resetAlways);
 
 
     // Countries
