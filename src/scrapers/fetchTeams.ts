@@ -6,7 +6,7 @@ import {
   , createLogger
   , FlagsManager 
 } from '../services/index.js';
-import { FREE_YEARS_FOOTBALL, API_SOURCE_NAME, SCRAPER_MODULE, IS_FREE_PLAN, IS_PRO_PLAN, FREE_RPM, PRO_RPM, TEAMS_COLL_NAME} from '../config/index.js';
+import { FREE_YEARS_FOOTBALL, API_SOURCE_NAME, SCRAPER_MODULE, IS_FREE_PLAN, TEAMS_COLL_NAME} from '../config/index.js';
 import { delayForLimit } from '../utils/index.js';
 import type { IntegerType } from 'mongodb';
 import { Db } from 'mongodb';

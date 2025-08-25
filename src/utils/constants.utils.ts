@@ -21,3 +21,9 @@ export const hostMap: Record<Sport, string> = {
     basketball: `v1.basketball.api-sports.io`,
     nba: `v2.nba.api-sports.io`
 }
+
+export const planMap: Record<Sport, string> = {
+    football: "PRO",
+    basketball: "FREE",
+    nba: "FREE"
+}
