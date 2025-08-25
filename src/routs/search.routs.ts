@@ -2,14 +2,15 @@ import express, { type Request, type Response } from 'express';
 import { z } from 'zod';
 import { createLogger, getMongoDb } from '../services/index.js';
 import { Game, Country, League, Team, type GameData, type TeamData, type LeagueData, type CountryData } from '../models/index.js';
-import { SPORT, SMALL_L, LARGE_L, API_MODULE, COUNTRIES_COLL_NAME, GAMES_COLL_NAME, TEAMS_COLL_NAME, LEAGUES_COLL_NAME } from '../config/index.js';
+import { SMALL_L, LARGE_L, API_MODULE, COUNTRIES_COLL_NAME, GAMES_COLL_NAME, TEAMS_COLL_NAME, LEAGUES_COLL_NAME } from '../config/index.js';
+import * as ft_config from '../config/football_config/index.js'
 import { incrementPopularity } from '../models/SearchPopularity.js'; 
 import { sortByPopularityInMemory } from '../scripts/sortByPopularity.js';
 
 
 const router = express.Router();
 
-const logger = createLogger('API', SPORT)
+const logger = createLogger('API', ft_config.SPORT)
 
 const COLLECTIONS = [Game, Country, League, Team];
 
@@ -18,7 +19,7 @@ function toArray<T>(item: T | T[] | null | undefined): T[] {
   return Array.isArray(item) ? item : [item];
 }
 
-const db = await getMongoDb(SPORT, API_MODULE);
+const db = await getMongoDb(ft_config.SPORT, API_MODULE);
 
 type ResultsByCollection = {
   [GAMES_COLL_NAME]: GameData[];

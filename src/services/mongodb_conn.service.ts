@@ -1,5 +1,5 @@
 import { MongoClient, Db } from 'mongodb';
-import { URI } from '../config/index.js';
+import { uriMap, type Sport } from '../utils/constants.utils.js';
 
 type AppDbKey = string; // e.g., 'api:sports' or 'scraper:sports'
 
@@ -9,14 +9,14 @@ const dbs: Record<AppDbKey, Db> = {};
 /**
  * Connect to a MongoDB DB for a specific app (api or scraper)
  */
-export async function getMongoDb(dbName: string, appName: string = 'api'): Promise<Db> {
+export async function getMongoDb(dbName: Sport, appName: string = 'api'): Promise<Db> {
   const key = `${appName}:${dbName}`;
 
   if (dbs[key]) {
     return dbs[key];
   }
 
-  const client = new MongoClient(URI);
+  const client = new MongoClient(uriMap[dbName]);
   await client.connect();
 
   const db = client.db(dbName);
@@ -27,7 +27,7 @@ export async function getMongoDb(dbName: string, appName: string = 'api'): Promi
   return db;
 }
 
-export async function closeMongoDb(dbName: string, appName: string): Promise<void> {
+export async function closeMongoDb(dbName: Sport, appName: string): Promise<void> {
   const key = `${appName}:${dbName}`;
   const client = clients[key];
 
@@ -42,7 +42,7 @@ export async function closeMongoDb(dbName: string, appName: string): Promise<voi
 export async function closeAllMongoDbs(appName?: string): Promise<void> {
   for (const key of Object.keys(clients)) {
     if (!appName || key.startsWith(`${appName}:`)) {
-      await closeMongoDb(key.split(':')[1], key.split(':')[0]);
+      await closeMongoDb(key.split(':')[1] as Sport, key.split(':')[0]);
     }
   }
 }

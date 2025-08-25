@@ -2,8 +2,10 @@ import express from 'express';
 import footballApi from '../routs/api.js';
 import { API_MODULE, LOCAL_PORT_BACKEND, LOCAL_PORT_FRONTEND, SCRAPER_MODULE, TEAMS_COLL_NAME } from '../config/index.js';
 import { Game, Country, League, Team } from '../models/index.js';
-import { SPORT, GAMES_COLL_NAME, COUNTRIES_COLL_NAME, LEAGUES_COLL_NAME } from '../config/index.js';
-import cors from 'cors';
+import { GAMES_COLL_NAME, COUNTRIES_COLL_NAME, LEAGUES_COLL_NAME } from '../config/index.js';
+
+import { SPORT } from '../config/basketball_config/index.js';
+
 import { Db } from 'mongodb';
 import { popCol } from '../models/SearchPopularity.js';
 

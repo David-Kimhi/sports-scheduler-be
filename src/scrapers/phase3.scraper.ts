@@ -1,12 +1,13 @@
 
 import type { Db } from "mongodb";
 import { cleanTeams } from "./fetchTeams.js";
+import type { Sport } from "../utils/constants.utils.js";
 
 
-async function runPhase(db: Db) {
+async function runPhase(sport: Sport) {
 
     // delete teams from old seasons
-    await cleanTeams();
+    await cleanTeams(sport);
 }
 
 export default runPhase;

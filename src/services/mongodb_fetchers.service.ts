@@ -1,12 +1,13 @@
 import { MongoClient, type Document, type WithId} from 'mongodb';
-import { URI, SPORT } from '../config/index.js';
 import { createLogger } from './logger.service.js';
+import { uriMap, type Sport } from '../utils/constants.utils.js';
 
-const logger = createLogger('MongoDB', SPORT)
+export async function fetchCollection(db_name: Sport, collection_name: string) {
 
-const client = new MongoClient(URI);
+    const logger = createLogger('MongoDB', db_name)
 
-export async function fetchCollection(db_name: string, collection_name: string) {
+    const client = new MongoClient(uriMap[db_name]);
+
     let data: WithId<Document>[]  | null = null
     try {
         await client.connect();
@@ -17,7 +18,7 @@ export async function fetchCollection(db_name: string, collection_name: string) 
     } catch (err: any) {
         logger.error(`General error: ${err.message}, ${err}`);
         logger.error(`password provided is ${process.env.DB_PASSWORD}`)
-        logger.error(`URI is ${URI}`)
+        logger.error(`URI is ${uriMap[db_name]}`)
     } finally {
         await client.close();
     }

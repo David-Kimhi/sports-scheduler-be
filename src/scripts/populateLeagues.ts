@@ -1,8 +1,8 @@
 import { Db } from 'mongodb';
-import { LEAGUES_COLL_NAME, SCRAPER_MODULE, SPORT, TEAMS_COLL_NAME } from '../config/index.js';
+import { LEAGUES_COLL_NAME, SCRAPER_MODULE, TEAMS_COLL_NAME } from '../config/index.js';
 import { createLogger } from '../services/logger.service.js';
+import type { Sport } from '../utils/constants.utils.js';
 
-const logger = createLogger(SCRAPER_MODULE, SPORT)
 
 /**
  * Updates the leagues collection to embed teams for each season.
@@ -13,7 +13,9 @@ const logger = createLogger(SCRAPER_MODULE, SPORT)
  *      team.league == league.id AND team.season == season.year,
  *  - Update that season object to include a `teams` array.
  */
-export async function populateLeagueTeams(db: Db) {
+export async function populateLeagueTeams(db: Db, sport: Sport) {
+  const logger = createLogger(SCRAPER_MODULE, sport)
+
   const leaguesCol = db.collection(LEAGUES_COLL_NAME);
   const teamsCol = db.collection(TEAMS_COLL_NAME);
 

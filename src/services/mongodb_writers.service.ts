@@ -13,10 +13,7 @@ import pLimit from 'p-limit';
 // local files
 import { buildFilter } from '../utils/index.js';
 import { createLogger } from './logger.service.js';
-import { SPORT } from '../config/index.js';
-
-const logger = createLogger('MongoDB', SPORT)
-
+import type { Sport } from '../utils/constants.utils.js';
 
 
 // limit writes to mongoDB to 1 in paralel
@@ -46,13 +43,15 @@ export function wrapperWrite<T extends Document>(
   fn: WriteFunction<T>,
   db: Db,
   collectionName: string,
-  appName: string = 'scraper'
+  sport: Sport
 ): (...args: any[]) => Promise<any> {
+  const logger = createLogger('MongoDB', sport)
+
   return async function (...args: any[]): Promise<any> {
     const collection = db.collection<T>(collectionName);
 
     return limitWrites( () => fn(collection, ...args).then(
-        results => logWriteResult(results)
+        results => logWriteResult(results, sport)
       ).catch(
         err => logger.error(`Write error:`, err)
       )
@@ -75,6 +74,7 @@ export async function writeUpsert<T extends Document>(
   matchField: string,
   source?: string
 ): Promise<BulkWriteResult> {
+  
   const enrichedData = data.map(doc => ({
     ...doc,
     ingestion_info: {
@@ -108,8 +108,12 @@ export async function writeUpsert<T extends Document>(
  */
 export async function writeInsert<T extends Document>(
   collection: Collection<T>,
-  data: T | T[]
+  data: T | T[],
+  sport: Sport
 ): Promise<InsertOneResult<T> | InsertManyResult<T>> {
+
+  const logger = createLogger('MongoDB', sport)
+
 
   let result: InsertOneResult | InsertManyResult;
 
@@ -124,7 +128,9 @@ export async function writeInsert<T extends Document>(
   return result;
 }
 
-function logWriteResult(result: any) {
+function logWriteResult(result: any, sport: Sport) {
+  const logger = createLogger('MongoDB', sport)
+
   if ('insertedCount' in result || 'upsertedCount' in result) {
     logger.info(`Write result:
       Inserted: ${result.insertedCount || 0},

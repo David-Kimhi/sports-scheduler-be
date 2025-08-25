@@ -2,11 +2,12 @@ import { Collection, ObjectId, type Document } from "mongodb";
 import { getMongoDb } from "../services/mongodb_conn.service.js";
 import type { BaseDocument } from "../interfaces.ts/models.interface.js";
 import { API_MODULE } from "../config/api.js";
+import type { Sport } from "../utils/constants.utils.js";
 
 export class BaseModel {
 
     static async initCollection(
-      dbName: string,
+      dbName: Sport,
       collectionName: string,
       appName: string = API_MODULE
     ): Promise<Collection<Document>> {

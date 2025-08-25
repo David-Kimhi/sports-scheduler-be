@@ -2,6 +2,7 @@ import { Collection, type Document } from 'mongodb';
 import type { BaseDocument, QueryParams } from '../interfaces.ts/models.interface.js';
 import { BaseModel } from './BaseModel.js';
 import { API_MODULE, SMALL_L } from '../config/index.js';
+import type { Sport } from '../utils/constants.utils.js';
 
 export interface GameData extends BaseDocument {
   date: string;
@@ -14,7 +15,7 @@ export interface GameData extends BaseDocument {
 export class Game extends BaseModel {
     static collection: Collection<Document>;
 
-    static async init(dbName: string, collectionName: string, appName = API_MODULE) {
+    static async init(dbName: Sport, collectionName: string, appName = API_MODULE) {
         Game.collection = await this.initCollection(dbName, collectionName, appName);
     }
 

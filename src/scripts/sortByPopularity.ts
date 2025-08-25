@@ -1,7 +1,7 @@
 import type { Db } from 'mongodb';
 import type { EntityType } from "../interfaces.ts/models.interface.js";
 import { fetchPopularityMap, popularityKey } from '../models/SearchPopularity.js';
-import { COUNTRIES_COLL_NAME } from '../config/footballDb.js';
+import { COUNTRIES_COLL_NAME } from '../config/mongo.config.js';
 
 type IdSelector<T> = (item: T) => string | number;
 

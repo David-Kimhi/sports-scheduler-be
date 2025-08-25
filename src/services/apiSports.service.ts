@@ -1,17 +1,16 @@
 import axios from 'axios';
 import { createLogger } from './logger.service.js';
+import { API_KEYS, hostMap, type Sport } from '../utils/constants.utils.js';
 
 
 const cwd = process.cwd()
 const logger = createLogger('API-FETCHER', 'APP');
 
-const API_KEYS: Record<string, string> = {
-  football: process.env.APIFOOTBALL_API_KEY!
-};
 
-function getAPIHostKey(sport: string): [string, string] {
-    const host = `v3.${sport.toLowerCase()}.api-sports.io`;
-    const key = API_KEYS[sport.toLowerCase()];
+
+function getAPIHostKey(sport: Sport): [string, string] {
+    const host = hostMap[sport];
+    const key = API_KEYS[sport];
     if (!key) {
         throw new Error(`No API key defined for sport: ${sport}`);
     }
@@ -19,7 +18,7 @@ function getAPIHostKey(sport: string): [string, string] {
 }
 
 export async function fetchSportData(
-  sport: string,
+  sport: Sport,
   endpoint: string,
   params?: Record<string | number, string | number>
 ) {
