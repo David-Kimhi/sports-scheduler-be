@@ -43,6 +43,17 @@ services:
       VITE_API_BASE: https://sport-scheduler.com/api
       VITE_FOOTBALL_ENDPOINT: /football
 
+  scraper:
+    image: scheduler-scraper:latest          # or 
+    build: { context: ., dockerfile: Dockerfile.scraper }
+    env_file:
+      - ./.env
+    volumes:
+      - ./logs:/app/dist/logs                # same as /root/sports-scheduler-be/logs
+      - ./data/flags.json:/app/dist/data/flags.json
+    # don't restart a batch job forever:
+    restart: "no"
+
 volumes:
   caddy_data: {}
   caddy_config: {}
