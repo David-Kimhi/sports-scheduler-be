@@ -99,8 +99,8 @@ export class Game extends BaseModel {
     
         // Date-Range filter
         let dateFilter: Record<string, any> = {};
-        if (from) dateFilter.$gte = from;
-        if (to) dateFilter.$lte = to;
+        if (from) dateFilter.$gte = new Date(from);
+        if (to) dateFilter.$lte = new Date(to);
         dateFilter = Object.keys(dateFilter).length > 0 ? { [this.gameDocMap['date'] as string]: dateFilter } : {};
     
         // Build filters from country, league, team

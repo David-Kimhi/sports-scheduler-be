@@ -6,3 +6,4 @@ dist/
 .DS_Store
 **/tests
 src/tests/
+.vscode/

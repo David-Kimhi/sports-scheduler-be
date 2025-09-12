@@ -4,6 +4,7 @@ import { API_MODULE, LOCAL_PORT_BACKEND, LOCAL_PORT_FRONTEND, TEAMS_COLL_NAME } 
 import { Game, Country, League, Team } from './src/models/index.js';
 import { SPORT, GAMES_COLL_NAME, COUNTRIES_COLL_NAME, LEAGUES_COLL_NAME } from './src/config/index.js';
 import cors from 'cors';
+import "dotenv/config";
 
 
 const app = express();
@@ -23,5 +24,5 @@ app.get(['/health','/api/health'], (_req: Request, res: Response) => {res.status
 
 
 app.listen(LOCAL_PORT_BACKEND, () => {
-  console.log(`🚀 Server running on port ${LOCAL_PORT_BACKEND}`);
+  console.log(`🚀 Server running on port ${LOCAL_PORT_BACKEND}. Ready`);
 });
