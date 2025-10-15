@@ -13,4 +13,5 @@ router.use('/search', searchRouter);
 router.use('/countries', countryRouter);
 router.use('/teams', teamRouter);
 
+
 export default router;

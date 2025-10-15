@@ -1,11 +1,12 @@
 import express from 'express';
-import footballApi from '../routs/api.js';
+import footballApi from '../routs/football.routs.js';
 import { API_MODULE, LOCAL_PORT_BACKEND, LOCAL_PORT_FRONTEND, SCRAPER_MODULE, TEAMS_COLL_NAME } from '../config/index.js';
 import { Game, Country, League, Team } from '../models/index.js';
 import { SPORT, GAMES_COLL_NAME, COUNTRIES_COLL_NAME, LEAGUES_COLL_NAME } from '../config/index.js';
 import cors from 'cors';
 import { Db } from 'mongodb';
 import { popCol } from '../models/SearchPopularity.js';
+import { Schema } from 'mongoose';
 
 await Game.init(SPORT, GAMES_COLL_NAME, API_MODULE);
 await Country.init(SPORT, COUNTRIES_COLL_NAME, API_MODULE);
@@ -67,3 +68,31 @@ await closeMongoDb(SPORT, SCRAPER_MODULE)
   export async function ensureIndexes(db: Db) {
     await popCol(db).createIndex({ _id: 1 }, { unique: true });
   }
+
+
+const SearchEventSchema = new Schema({
+  ts: { type: Date, default: Date.now, index: true, expires: 60 * 60 * 24 * 30 }, // TTL = 30 days
+  query: String,
+  filters: {
+    type: Map,
+    of: [String],         // value is an array of strings
+    default: () => new Map(),
+    required: true
+  },                    
+
+  loc: {                                  
+    type: { type: String, enum: ["Point"], default: "Point" },
+    coordinates: [Number]        
+  },
+
+  city: String,
+  country: String,
+  ip: String,                             
+  userId: Schema.Types.ObjectId,          // optional
+  ua: String,                             // user-agent (optional)
+  sessionId: String                       // optional
+});
+
+// Indexes
+SearchEventSchema.index({ loc: "2dsphere" });
+SearchEventSchema.index({ filters: 1, ts: -1 }); // fast filter+time queries

@@ -1,5 +1,8 @@
 import { MongoClient, Db } from 'mongodb';
 import { URI } from '../config/index.js';
+import type { Connection } from "mongoose";
+import mongoose from "mongoose";
+
 
 type AppDbKey = string; // e.g., 'api:sports' or 'scraper:sports'
 
@@ -25,6 +28,20 @@ export async function getMongoDb(dbName: string, appName: string = 'api'): Promi
 
   console.log(`[Mongo][${appName}] Connected to database: ${dbName}`);
   return db;
+}
+
+const connections: Record<string, Connection> = {};
+
+export async function getMongooseConnection(dbName: string, appName: string) {
+  const key = `${appName}:${dbName}`;
+  if (connections[key]) return connections[key];
+
+  const uri = URI!;
+  const conn = await mongoose.createConnection(uri, { dbName }).asPromise();
+  connections[key] = conn;
+
+  console.log(`[Mongo][${appName}] Connected to database: ${dbName}`);
+  return conn;
 }
 
 export async function closeMongoDb(dbName: string, appName: string): Promise<void> {

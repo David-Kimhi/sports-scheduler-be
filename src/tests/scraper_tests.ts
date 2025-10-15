@@ -1,15 +1,10 @@
-import { populateLeagueTeams } from "../scripts/populateLeagues.js";
 import { closeMongoDb, getMongoDb } from "../services/index.js";
-import { SPORT, SCRAPER_MODULE, IS_PRO_PLAN } from "../config/index.js";
-import { cleanTeams } from "../scrapers/football/fetchTeams.js";
+import { SCRAPER_MODULE, ANALYTICS_DB } from "../config/index.js";
+import { getYesterdayBounds } from "../utils/times.utils.js";
+import { rullupDay } from "../scrapers/analytics/dailyRollup.analytics.js";
 
-await cleanTeams();
-await closeMongoDb(SPORT, SCRAPER_MODULE);
-
-import { FlagsManager } from "../services/index.js";
-
-const flasgsManager = new FlagsManager();
-
-
-console.log(IS_PRO_PLAN)
-
+const analyticsDb = await getMongoDb(ANALYTICS_DB, SCRAPER_MODULE)
+const yesterdayBounds = getYesterdayBounds();
+const [dayStart, dayEnd] = [yesterdayBounds.start, yesterdayBounds.end];
+await rullupDay(dayStart, dayEnd, analyticsDb);
+await closeMongoDb(ANALYTICS_DB, SCRAPER_MODULE)
