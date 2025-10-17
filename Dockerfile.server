@@ -16,6 +16,7 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
+RUN npm install dotenv
 # At runtime we only need production deps; prune dev to slim the image
 RUN npm ci --omit=dev
 

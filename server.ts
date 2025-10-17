@@ -33,9 +33,9 @@ app.use('/football', footballApi);
 app.use('/analytics', analyticsApi);
 
 
-app.get(['/health','/api/health'], (_req: Request, res: Response) => {res.status(200).send('ok')});
-
-
+app.get('/health', (req: Request, res: Response) => {
+  res.json({ status: 'ok', time: new Date().toISOString() });
+});
 app.listen(LOCAL_PORT_BACKEND, () => {
   console.log(`🚀 Server running on port ${LOCAL_PORT_BACKEND}. Ready`);
 });

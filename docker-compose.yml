@@ -8,6 +8,12 @@ services:
     expose:
       - "3000"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:3000/health || wget -qO- http://localhost:3000/health >/dev/null || (nc -z localhost 3000)"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 25s
 
   web:
     build:
@@ -31,6 +37,12 @@ services:
     depends_on:
       - api
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- --header='Host: sport-scheduler.com' http://127.0.0.1/ >/dev/null || wget -qO- --no-check-certificate --header='Host: sport-scheduler.com' https://127.0.0.1/ >/dev/null || (nc -z 127.0.0.1 80)"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
 
   web-jobs:
     image: node:20-alpine
