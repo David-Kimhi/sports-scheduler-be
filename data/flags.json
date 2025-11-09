@@ -3152,5 +3152,9 @@
   "fetchGamesLeague_959_2025": false,
   "fetchTeamsLeague_298_2025": false,
   "fetchTeamsLeague_403_2025": false,
-  "fetchTeamsLeague_959_2025": false
+  "fetchTeamsLeague_959_2025": false,
+  "fetchGamesLeague_964_2025": false,
+  "fetchGamesLeague_721_2025": false,
+  "fetchTeamsLeague_964_2025": false,
+  "fetchTeamsLeague_721_2025": false
 }
