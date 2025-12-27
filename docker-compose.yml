@@ -32,8 +32,9 @@ services:
     volumes:
       - caddy_data:/data
       - caddy_config:/config
-      # If you ever choose runtime logos, add the bind **here**, not top-level:
-      # - ../sports-scheduler-web/public/assets/logos:/usr/share/caddy/assets/logos:ro
+      - ../sports-scheduler-web/Caddyfile:/etc/custom/Caddyfile:ro   
+    command: ["caddy", "run", "--config", "/etc/custom/Caddyfile", "--adapter", "caddyfile"]
+    
     depends_on:
       - api
     restart: unless-stopped
@@ -43,6 +44,9 @@ services:
       timeout: 5s
       retries: 5
       start_period: 15s
+    networks:
+      - default        # internal network for api:3000
+      - web            # shared network with portfoliochat
 
   web-jobs:
     image: node:20-alpine
@@ -69,3 +73,7 @@ services:
 volumes:
   caddy_data: {}
   caddy_config: {}
+
+networks:
+  web:
+    external: true     # 👈 shared network
