@@ -7,3 +7,6 @@ dist/
 **/tests
 src/tests/
 .vscode/
+
+# Local runtime flags
+data/flags.json
