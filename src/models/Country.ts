@@ -1,6 +1,6 @@
 import { Collection, type Document, Binary } from 'mongodb';
 import { BaseModel } from './BaseModel.js';
-import { type BaseDocument, type QueryParams } from '../interfaces.ts/models.interface.js';
+import { type BaseDocument, type QueryParams } from '../interfaces/models.interface.js';
 import { API_MODULE, SMALL_L } from '../config/index.js';
 
 export interface CountryData extends BaseDocument {

@@ -1,9 +1,9 @@
 import express from 'express';
-import gamesRouter from './games.routs.js';
-import searchRouter from './search.routs.js';
-import leaguesRouter from './league.routs.js';
-import countryRouter from './county.routs.js';
-import teamRouter from './team.routs.js';
+import countryRouter from './country.routes.js';
+import gamesRouter from './games.routes.js';
+import leaguesRouter from './league.routes.js';
+import searchRouter from './search.routes.js';
+import teamRouter from './team.routes.js';
 
 const router = express.Router();
 
