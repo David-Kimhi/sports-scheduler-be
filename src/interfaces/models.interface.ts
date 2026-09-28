@@ -1,4 +1,4 @@
-import { ObjectId, Collection} from 'mongodb';
+import { ObjectId, Collection } from 'mongodb';
 import { TEAMS_COLL_NAME, LEAGUES_COLL_NAME, COUNTRIES_COLL_NAME } from '../config/index.js';
 
 export type EntityType = typeof TEAMS_COLL_NAME | typeof LEAGUES_COLL_NAME | typeof COUNTRIES_COLL_NAME;
@@ -8,15 +8,15 @@ export interface BaseDocument {
   _id: ObjectId;
   id: number;
   name: string;
-  injestion_info: { [key: string] : any }
-  [key: string]: any; 
+  injestion_info: { [key: string]: any }
+  [key: string]: any;
 };
 
 export interface SearchPopularity {
-  _id: string;            
+  _id: string;
   type: EntityType
-  entityId: string;       
-  count: number;          
+  entityId: string;
+  count: number;
   updatedAt: Date;
 }
 
@@ -25,8 +25,8 @@ export interface QueryParams {
   field: string;
   filters?: {
     countryIds?: string[];
-    leagueIds?: string[];
-    teamIds?: string[];
+    leagueIds?: number[];
+    teamIds?: number[];
   };
   after?: Date;
   from?: Date;

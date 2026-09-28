@@ -3,6 +3,6 @@ import searchEventRouter from './searchEvent.routes.js';
 
 const router = express.Router();
 
-router.use('/searchEvent', searchEventRouter);
+router.use('/events', searchEventRouter);
 
 export default router;

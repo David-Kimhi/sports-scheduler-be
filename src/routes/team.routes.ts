@@ -1,45 +1,15 @@
-import express, { type Request, type Response } from 'express';
-import { Team } from '../models/Team.js';
-import { createLogger } from '../services/index.js';
-import {SPORT, API_MODULE } from '../config/index.js';
+import express from 'express';
+import { z } from 'zod';
+import { validate } from '../middleware/validate.js';
+import { getTeams, getTeamLogos } from '../controllers/teams.controller.js';
 
-const logger = createLogger(API_MODULE, SPORT)
+const teamsQuerySchema = z.object({
+  season: z.coerce.number().optional().default(2023),
+});
 
-const model = Team;
 const router = express.Router();
 
-router.get('/fetchAll', async (req: Request, res: Response) => {
-
-    // TODO: add optional parameter - season number (default now - 2023)
-    // Reject if any query parameters are present
-    if (Object.keys(req.query).length > 0) {
-        res.status(400).json({ error: 'No parameters allowed for this endpoint' });
-    }
-
-    try {
-        const results = await model.fetchAll();
-        res.json(results);
-    } catch (err: any) {
-        logger.error(`Error fetching teams: ${err}`);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-    
-});
-
-router.get('/fetchLogos', async (req: Request, res: Response) => {
-    // Reject if any query parameters are present
-    if (Object.keys(req.query).length > 0) {
-        res.status(400).json({ error: 'No parameters allowed for this endpoint' });
-    }
-
-    try {
-        const results = await model.fetchLogos();
-        res.json(results);
-    } catch (err: any) {
-        logger.error(`Error fetching teams: ${err}`);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-    
-});
+router.get('/logos', getTeamLogos);
+router.get('/', validate(teamsQuerySchema), getTeams);
 
 export default router;

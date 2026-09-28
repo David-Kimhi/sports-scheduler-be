@@ -1,79 +1,19 @@
-import express, { type Request, type Response } from 'express';
-import { API_MODULE, SPORT } from "../config/index.js";
-import { createLogger } from "../services/index.js";
-import { League, type LeagueData } from '../models/index.js';
+import express from 'express';
 import { z } from 'zod';
+import { LARGE_L, SMALL_L } from '../config/index.js';
+import { validate } from '../middleware/validate.js';
+import { getLeagues, getLeagueLogos } from '../controllers/leagues.controller.js';
 
-const logger = createLogger(API_MODULE, SPORT);
+const leaguesQuerySchema = z.object({
+  word: z.string().optional(),
+  field: z.enum(['name', 'country']).optional().default('name'),
+  limit: z.coerce.number().min(1).max(LARGE_L).optional().default(SMALL_L),
+});
 
 const router = express.Router();
 
-const model = League
-
-const allowFields = ["name", "country"] as const satisfies (keyof LeagueData)[]
-
-// Zod schema for query params
-const querySchema = z.object({
-    word: z.string({
-        required_error: "field is required",      
-        invalid_type_error: "field must be a string" 
-    }).min(1, "field cannot be empty"),
-    field: z.enum(allowFields).optional().default('name')
-})
-
-
-router.get('/', async (req: Request, res: Response) => {
-
-    const parseResult = querySchema.safeParse(req.query);
-
-    if (!parseResult.success) {
-        res.status(400).json({ error: parseResult.error.flatten().fieldErrors });
-        return;
-    }
-
-    const { word, field } = parseResult.data;
-    try {
-        const results = await model.fetchByWord({word, field});
-        res.json(results);
-  } catch (err) {
-    logger.error('[Search Route] Error:', err);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-
-router.get('/fetchAll', async (req: Request, res: Response) => {
-
-    // Reject if any query parameters are present
-    if (Object.keys(req.query).length > 0) {
-        res.status(400).json({ error: 'No parameters allowed for this endpoint' });
-    }
-
-    try {
-        const results = await model.fetchAll();
-        res.json(results);
-    } catch (err: any) {
-        logger.error(`Error fetching leagues: ${err}`);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-    
-});
-
-router.get('/fetchLogos', async (req: Request, res: Response) => {
-
-    // Reject if any query parameters are present
-    if (Object.keys(req.query).length > 0) {
-        res.status(400).json({ error: 'No parameters allowed for this endpoint' });
-    }
-
-    try {
-        const results = await model.fetchLogos();
-        res.json(results);
-    } catch (err: any) {
-        logger.error(`Error fetching leagues: ${err}`);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-    
-});
+// Must be registered before any future /:id routes
+router.get('/logos', getLeagueLogos);
+router.get('/', validate(leaguesQuerySchema), getLeagues);
 
 export default router;

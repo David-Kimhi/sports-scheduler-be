@@ -1,5 +1,5 @@
 import { ObjectId, type Db, type Collection} from "mongodb";
-import type { EntityType, SearchPopularity } from "../interfaces.ts/models.interface.js";
+import type { EntityType, SearchPopularity } from "../interfaces/models.interface.js";
 
 const POP_COLLECTION = 'search_popularity';
 
