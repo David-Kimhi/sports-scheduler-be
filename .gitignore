@@ -13,3 +13,6 @@ logs/
 
 # Local runtime flags
 data/flags.json
+
+# Private server runbook
+SAFE_UPDATE.md
