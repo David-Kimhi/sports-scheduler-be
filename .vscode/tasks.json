@@ -1,0 +1,21 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "API: dev (ts-node/esm, .env)",
+      "type": "shell",
+      "command": "npx",
+      "args": [
+        "dotenv", "-e", ".env", "--",
+        "node", "--loader", "ts-node/esm",
+        "${workspaceFolder}/server.ts"
+      ],
+      "options": { "cwd": "${workspaceFolder}" },
+      "presentation": {
+        "panel": "dedicated",
+        "group": "api"
+      },
+      "runOptions": { "runOn": "folderOpen" }
+    }
+  ]
+}
